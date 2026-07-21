@@ -11,3 +11,15 @@ Suddivisione lavoro:
 - Ben e Ken: Catalogo e Dattaglio
 - Mattia: Inserimento dati
 - Assan: Calendario
+
+# Link al sito: http://crystalcharting.atwebpages.com/
+
+
+Dati di accesso al tool gestione:
+Collegati a https://cp1.awardspace.net/ 
+Utente accesso: 4762366 
+Password accesso: CrystalCharting2026
+
+Database: 4762366_cc
+PassDatabase: CrystalCharting2026
+Server/Porta: fdb1032.awardspace.net / 3306 
