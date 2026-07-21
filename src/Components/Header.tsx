@@ -1,7 +1,9 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { Box, Typography } from "@mui/material";
+import { Navbar } from "./NavBar";
 
 export function Header() {
-  return <></>;
+  return (
+    <header>
+      <Navbar />
+    </header>
+  );
 }
