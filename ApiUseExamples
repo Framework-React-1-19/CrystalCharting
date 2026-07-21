@@ -4,13 +4,13 @@ IMBARCAZIONI:
 
 #Leggere tutte le barche (GET)
 
-fetch('https://iltuosito.awardspace.net/api.php?action=get_barche')
+fetch('https://crystalcharting.awardspace.net/api.php?action=get_barche')
   .then(response => response.json())
   .then(data => console.log(data));
 
 #Aggiungere una nuova barca (POST)
 
-fetch('https://iltuosito.awardspace.net/api.php?action=add_barca', {
+fetch('https://crystalcharting.awardspace.net/api.php?action=add_barca', {
   method: 'POST',
   headers: { 'Content-Type': 'application/json' },
   body: JSON.stringify({
@@ -27,7 +27,7 @@ fetch('https://iltuosito.awardspace.net/api.php?action=add_barca', {
 #Eliminare una barca (e di conseguenza le sue prenotazioni)
 
 // Sostituisci il "5" con l'idBarca che vuoi eliminare
-fetch('https://iltuosito.awardspace.net/api.php?action=delete_barca&id=5')
+fetch('https://crystalcharting.awardspace.net/api.php?action=delete_barca&id=5')
   .then(response => response.json())
   .then(data => console.log(data));
 
@@ -37,7 +37,7 @@ PRENOTAZIONI:
 L'API restituirà le date già formattate in GG/MM/AAAA come impostato nel codice PHP.
 
 
-fetch('https://iltuosito.awardspace.net/api.php?action=get_prenotazioni')
+fetch('https://crystalcharting.awardspace.net/api.php?action=get_prenotazioni')
   .then(response => response.json())
   .then(data => {
       console.log("Lista prenotazioni:", data);
@@ -59,7 +59,7 @@ const nuovaPrenotazione = {
     nome_prenotazione: "Mario Rossi"
 };
 
-fetch('https://iltuosito.awardspace.net/api.php?action=add_prenotazione', {
+fetch('https://crystalcharting.awardspace.net/api.php?action=add_prenotazione', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(nuovaPrenotazione)
@@ -81,7 +81,7 @@ Per eliminare una singola prenotazione, basta passare il suo idPrenotazione dire
 // Sostituisci il "12" con l'idPrenotazione che vuoi eliminare
 const idPrenotazioneDaCancellare = 12;
 
-fetch(`https://iltuosito.awardspace.net/api.php?action=delete_prenotazione&id=${idPrenotazioneDaCancellare}`)
+fetch(`https://crystalcharting.awardspace.net/api.php?action=delete_prenotazione&id=${idPrenotazioneDaCancellare}`)
   .then(response => response.json())
   .then(data => {
       if(data.success) {
