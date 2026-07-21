@@ -1,5 +1,7 @@
 Raggiungi l'api con questo percorso:  http://crystalcharting.atwebpages.com/api.php
 
+IMBARCAZIONI:
+
 #Leggere tutte le barche (GET)
 
 fetch('https://iltuosito.awardspace.net/api.php?action=get_barche')
@@ -28,3 +30,64 @@ fetch('https://iltuosito.awardspace.net/api.php?action=add_barca', {
 fetch('https://iltuosito.awardspace.net/api.php?action=delete_barca&id=5')
   .then(response => response.json())
   .then(data => console.log(data));
+
+PRENOTAZIONI:
+
+1. Leggere tutte le prenotazioni (GET)
+L'API restituirà le date già formattate in GG/MM/AAAA come impostato nel codice PHP.
+
+
+fetch('https://iltuosito.awardspace.net/api.php?action=get_prenotazioni')
+  .then(response => response.json())
+  .then(data => {
+      console.log("Lista prenotazioni:", data);
+      // Qui puoi ciclare l'array data.data per stamparlo in una tabella HTML
+  })
+  .catch(error => console.error("Errore:", error));
+
+
+
+2. Aggiungere una nuova prenotazione (POST)
+Attenzione alle date: Quando invii i dati al database, devi usare il formato internazionale YYYY-MM-DD (es. 2026-08-15), altrimenti MySQL restituirà un errore.
+
+// Dati della prenotazione da inviare
+const nuovaPrenotazione = {
+    idBarca: 1, // ID della barca che si vuole prenotare (deve esistere!)
+    data_checkin: "2026-07-25", // Formato YYYY-MM-DD
+    data_checkout: "2026-07-30", // Formato YYYY-MM-DD
+    email: "cliente@email.it",
+    nome_prenotazione: "Mario Rossi"
+};
+
+fetch('https://iltuosito.awardspace.net/api.php?action=add_prenotazione', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(nuovaPrenotazione)
+})
+.then(response => response.json())
+.then(data => {
+    if(data.success) {
+        console.log("Prenotazione salvata con ID:", data.id);
+    } else {
+        console.error("Errore dal server:", data.message);
+    }
+})
+.catch(error => console.error("Errore di rete:", error));
+
+
+3. Eliminare una prenotazione
+Per eliminare una singola prenotazione, basta passare il suo idPrenotazione direttamente nell'URL.
+
+// Sostituisci il "12" con l'idPrenotazione che vuoi eliminare
+const idPrenotazioneDaCancellare = 12;
+
+fetch(`https://iltuosito.awardspace.net/api.php?action=delete_prenotazione&id=${idPrenotazioneDaCancellare}`)
+  .then(response => response.json())
+  .then(data => {
+      if(data.success) {
+          console.log("Prenotazione eliminata con successo!");
+      } else {
+          console.error("Errore durante l'eliminazione:", data.message);
+      }
+  })
+  .catch(error => console.error("Errore:", error));
