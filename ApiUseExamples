@@ -1,0 +1,30 @@
+Raggiungi l'api con questo percorso:  http://crystalcharting.atwebpages.com/api.php
+
+#Leggere tutte le barche (GET)
+
+fetch('https://iltuosito.awardspace.net/api.php?action=get_barche')
+  .then(response => response.json())
+  .then(data => console.log(data));
+
+#Aggiungere una nuova barca (POST)
+
+fetch('https://iltuosito.awardspace.net/api.php?action=add_barca', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    nomebarca: "Galeone",
+    tipo: "Vela",
+    alimentazione: "Vento",
+    capienza: 12,
+    costo_giornaliero: 250.50
+  })
+})
+.then(response => response.json())
+.then(data => console.log(data));
+
+#Eliminare una barca (e di conseguenza le sue prenotazioni)
+
+// Sostituisci il "5" con l'idBarca che vuoi eliminare
+fetch('https://iltuosito.awardspace.net/api.php?action=delete_barca&id=5')
+  .then(response => response.json())
+  .then(data => console.log(data));

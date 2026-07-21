@@ -19,8 +19,8 @@ function App() {
 
           <Route path="admin" element={<Admin />}>
             <Route index element={<Login />} />
-            <Route path="Inserimento" element={<Inserimento />} />
-            <Route path="Prenotazioni" element={<Prenotazioni />} />
+            <Route path="inserimento" element={<Inserimento />} />
+            <Route path="prenotazioni" element={<Prenotazioni />} />
           </Route>
 
           <Route path="*" element={<NotFound />} />
