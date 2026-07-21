@@ -2,11 +2,13 @@ import { useState } from "react";
 import { Outlet, useNavigate, Link } from "react-router-dom";
 import { Box, Typography } from "@mui/material";
 
-export function Catalogo() {
+export function ContenitoreAd() {
   return (
     <Box>
-      <Typography>Catalogo principale</Typography>
-      {/* Qui verrà creata la griglia con le card delle imbarcazioni */}
+      <Typography>Admin</Typography>
+      <Box>
+        <Outlet />
+      </Box>
     </Box>
   );
 }

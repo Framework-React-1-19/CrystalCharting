@@ -6,6 +6,8 @@ import { Dettagli } from "./Components/Dettagli";
 import { Calendario } from "./Components/Calendario";
 import { Admin } from "./Components/Admin";
 import { Inserimento } from "./Components/Inserimento";
+import { ContenitoreCat } from "./Components/ContenitoreCat";
+import { ContenitoreAd } from "./Components/ContenitoreAd";
 
 function App() {
   return (
@@ -14,19 +16,21 @@ function App() {
         <Route path="/" element={<Contenitore />}>
           <Route index element={<Home />} />
 
-          <Route path="catalogo" element={<Catalogo />}>
-            <Route path="dettagli" element={<Dettagli />} />
+          <Route path="catalogo" element={<ContenitoreCat />}>
+            <Route index element={<Catalogo />} />
+            <Route path="calendario" element={<Calendario />} />
           </Route>
 
-          <Route path="calendario" element={<Calendario />} />
-
-          <Route path="admin" element={<Admin />}>
+          <Route path="admin" element={<ContenitoreAd />}>
+            <Route index element={<Admin />} />
             <Route path="inserimento" element={<Inserimento />} />
           </Route>
+
+          <Route path="*" element={<>404 Page not found</>} />
         </Route>
       </Routes>
     </BrowserRouter>
   );
 }
 
-export default App
+export default App;
