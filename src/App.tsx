@@ -2,12 +2,10 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Contenitore } from "./Components/Contenitore";
 import { Home } from "./Components/Home";
 import { Catalogo } from "./Components/Catalogo";
-import { Dettagli } from "./Components/Dettagli";
-import { Calendario } from "./Components/Calendario";
 import { Admin } from "./Components/Admin";
+import { Login } from "./Components/Login";
 import { Inserimento } from "./Components/Inserimento";
-import { ContenitoreCat } from "./Components/ContenitoreCat";
-import { ContenitoreAd } from "./Components/ContenitoreAd";
+import { Prenotazioni } from "./Components/Prenotazioni";
 
 function App() {
   return (
@@ -16,14 +14,12 @@ function App() {
         <Route path="/" element={<Contenitore />}>
           <Route index element={<Home />} />
 
-          <Route path="catalogo" element={<ContenitoreCat />}>
-            <Route index element={<Catalogo />} />
-            <Route path="calendario" element={<Calendario />} />
-          </Route>
+          <Route path="catalogo" element={<Catalogo />} />
 
-          <Route path="admin" element={<ContenitoreAd />}>
-            <Route index element={<Admin />} />
-            <Route path="inserimento" element={<Inserimento />} />
+          <Route path="admin" element={<Admin />}>
+            <Route index element={<Login />} />
+            <Route path="Inserimento" element={<Inserimento />} />
+            <Route path="Prenotazioni" element={<Prenotazioni />} />
           </Route>
 
           <Route path="*" element={<>404 Page not found</>} />
