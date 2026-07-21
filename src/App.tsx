@@ -6,6 +6,7 @@ import { Admin } from "./Components/Admin";
 import { Login } from "./Components/Login";
 import { Inserimento } from "./Components/Inserimento";
 import { Prenotazioni } from "./Components/Prenotazioni";
+import { NotFound } from "./Components/NotFound";
 
 function App() {
   return (
@@ -22,7 +23,7 @@ function App() {
             <Route path="Prenotazioni" element={<Prenotazioni />} />
           </Route>
 
-          <Route path="*" element={<>404 Page not found</>} />
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
     </BrowserRouter>
