@@ -1,3 +1,5 @@
+Raggiungi l'api con questo percorso:  http://crystalcharting.atwebpages.com/api.php
+
 #Leggere tutte le barche (GET)
 
 fetch('https://iltuosito.awardspace.net/api.php?action=get_barche')
