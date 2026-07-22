@@ -67,8 +67,7 @@ export function NotFound() {
               lineHeight: 1,
               letterSpacing: "-2px",
               mb: 1,
-            }}
-          >
+            }}>
             404
           </Typography>
 
@@ -86,9 +85,8 @@ export function NotFound() {
           <Typography
             variant="body1"
             color="text.secondary"
-            sx={{ mb: 4, maxWidth: 420, mx: "auto" }}
-          >
-            Sembra che tu sia andato fuori rotta! La pagina o l'imbarcazione che stai cercando non esiste o è stata spostata.
+            sx={{ mb: 4, maxWidth: 420, mx: "auto" }}>
+            Sembra che tu sia andato fuori rotta! La pagina che stai cercando non esiste o è stata spostata.
           </Typography>
 
           {/* Pulsante di Ritorno */}
@@ -107,9 +105,8 @@ export function NotFound() {
               fontWeight: "bold",
               boxShadow: 3,
               textTransform: "none",
-            }}
-          >
-            Torna alla Home Page
+            }}>
+            Torna al Porto
           </Button>
         </Paper>
       </Box>
