@@ -21,50 +21,32 @@ import SendIcon from "@mui/icons-material/Send";
 export function Inserimento() {
 
   // Funzione all'evento submit del form
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    //dico dal TS a React che: React.FormEvent<HTMLFormElement> è un evento di un form generato specificamente da un elemento HTML <form>
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    
+    const form = e.currentTarget;
 
-    const form = e.currentTarget; //form tag
-    const formData = new FormData(form);
-    const datiForm = Object.fromEntries(formData.entries()); 
-    /* formData.entries() restituisce un elenco di coppie [chiave, valore] estratte dal form 
-    e Object.fromEntries(...) trasforma quell'elenco in un classico oggetto JavaScript { ... }*/
+    //creazione del body per la request API
+    const dati = new FormData(form);
+    
+    try {
+      const response = await fetch('https://crystalcharting.awardspace.net/api.php?action=add_barca', {
+        method: 'POST',
+        body: dati,
+      });
 
-    //Chiamata API {POST}
-    fetch('https://crystalcharting.awardspace.net/api.php?action=add_barca', {
-      method: 'POST',
-      headers: { 
-        'Content-Type': 'application/json' 
-      },
-      body: JSON.stringify({
-        nomebarca: datiForm.nome,
-        tipo: datiForm.tipo,
-        alimentazione: datiForm.alimentazione,
-        capienza: datiForm.capienza,
-        costo_giornaliero: datiForm.costoGiornaliero,
-        potenza: datiForm.potenza,
-        lunghezza: datiForm.lunghezza,
-        cabine: datiForm.cabine,
-        capacita: datiForm.capacita,
-        descrizione: datiForm.descrizione
-      })
-    })
-    .then(response => {
-      if (!response.ok) { // se la risposta è esplosiva
-        throw new Error(`Errore Server: ${response.status} ${response.statusText}`);
+      const risposta = await response.text();
+
+      if (risposta.trim() === "OK") {
+        alert("Barca aggiunta con successo!");
+        form.reset(); // Pulisce i campi del form
+      } else {
+        alert("Errore dal server: " + risposta);
       }
-      return response.json();
-    })
-    .then(data => {
-      console.log("Risposta server:", data);
-      alert("Imbarcazione inserita con successo!");
-      form.reset(); // Pulisce i campi del form
-    })
-    .catch(error => {
-      console.error("Errore durante l'inserimento:", error);
-      alert("Si è verificato un errore durante il salvataggio. Verificare la console.");
-    });
+    } catch (error) {
+      console.error("Errore di rete:", error);
+      alert("Impossibile contattare il server. Controlla la connessione!");
+    }
   };
 
   return (
@@ -92,8 +74,8 @@ export function Inserimento() {
             <TextField
               fullWidth
               required
-              id="nome"
-              name="nome"
+              id="nomebarca"
+              name="nomebarca"
               label="Nome Barca"
               placeholder="Es: Poseidon"
               sx={{ mt : 2}}/>
@@ -218,8 +200,9 @@ export function Inserimento() {
                 inputProps={{ min: 1 }}/>
             </Box>
 
-            {/* capacità del serbatoio del carburante */}
+            
             <Box display="flex" gap={2} flexDirection={{ xs: "column", sm: "row" }}>
+            {/* capacità del serbatoio del carburante 
               <TextField
                 fullWidth
                 type="number"
@@ -236,7 +219,7 @@ export function Inserimento() {
                     step: "0.1",
                     min: 0,
                   }
-                }}/>
+                }}/>*/}
 
               {/* potenza */}
               <TextField
@@ -330,8 +313,8 @@ export function Inserimento() {
                 fullWidth
                 required
                 type="number"
-                id="costoGiornaliero"
-                name="costoGiornaliero"
+                id="costo_giornaliero"
+                name="costo_giornaliero"
                 label="Costo Giornaliero"
                 placeholder="350"
                 InputProps={{
