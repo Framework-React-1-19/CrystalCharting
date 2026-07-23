@@ -81,7 +81,7 @@ export function Inserimento() {
               sx={{ mt : 2}}/>
 
             {/* scelta tipo barca COMBOBOX */}
-            <Box display="flex" sx={{ gap:2 }} flexDirection={{ xs: "column", sm: "row" }}>
+            <Box sx={{ gap:2, display: "flex", flexDirection: { xs: "column", sm: "row" } }}>
               <FormControl fullWidth required sx={{ mt : 2 }}>
                 <InputLabel id="tipo-label">Tipo di Barca</InputLabel>
                 <Select
@@ -147,7 +147,7 @@ export function Inserimento() {
             </Typography>
 
             {/* lunghezza */}
-            <Box display="flex" gap={2} flexDirection={{ xs: "column", sm: "row" }}>
+            <Box sx={{display: "flex", gap: 2, flexDirection: { xs: "column", sm: "row" } }}>
               <TextField
                 fullWidth
                 required
@@ -169,7 +169,7 @@ export function Inserimento() {
             </Box>
 
             {/* cabine */}
-            <Box display="flex" gap={2} flexDirection={{ xs: "column", sm: "row" }}>
+            <Box sx={{display: "flex", gap: 2, flexDirection: { xs: "column", sm: "row" } }}>
               <TextField
                 fullWidth
                 type="number"
@@ -201,7 +201,7 @@ export function Inserimento() {
             </Box>
 
             
-            <Box display="flex" gap={2} flexDirection={{ xs: "column", sm: "row" }}>
+            <Box sx={{display: "flex", gap: 2, flexDirection: { xs: "column", sm: "row" } }}>
             {/* capacità del serbatoio del carburante 
               <TextField
                 fullWidth
