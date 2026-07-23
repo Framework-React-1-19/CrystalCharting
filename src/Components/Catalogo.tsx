@@ -72,20 +72,23 @@ export const Catalogo: React.FC = () => {
         return false;
       }
       // Filtro per capienza minima
-      if (filters.capienzaMin !== "" && barca.capienza < filters.capienzaMin) {
+      if (
+        filters.capienzaMin !== "" &&
+        barca.capienza < Number(filters.capienzaMin)
+      ) {
         return false;
       }
       // Filtro per lunghezza minima
       if (
         filters.lunghezzaMin !== "" &&
-        barca.lunghezza < filters.lunghezzaMin
+        barca.lunghezza < Number(filters.lunghezzaMin)
       ) {
         return false;
       }
       // Filtro per lunghezza massima
       if (
         filters.lunghezzaMax !== "" &&
-        barca.lunghezza > filters.lunghezzaMax
+        barca.lunghezza > Number(filters.lunghezzaMax)
       ) {
         return false;
       }

@@ -28,6 +28,10 @@ export const FiltriBarche: React.FC<FiltriBarcheProps> = ({
   onReset,
 }) => {
   const handleChange = (field: keyof FilterState, value: any) => {
+    // Validazione: se è un numero, assicurati che non sia negativo
+    if (typeof value === "number" && value < 0) {
+      return;
+    }
     onFilterChange({
       ...filters,
       [field]: value,
@@ -73,7 +77,9 @@ export const FiltriBarche: React.FC<FiltriBarcheProps> = ({
             onChange={(e) =>
               handleChange(
                 "capienzaMin",
-                e.target.value === "" ? "" : Number(e.target.value),
+                e.target.value === ""
+                  ? ""
+                  : Math.max(0, Number(e.target.value)),
               )
             }
             inputProps={{ min: 0 }}
@@ -91,7 +97,9 @@ export const FiltriBarche: React.FC<FiltriBarcheProps> = ({
             onChange={(e) =>
               handleChange(
                 "lunghezzaMin",
-                e.target.value === "" ? "" : Number(e.target.value),
+                e.target.value === ""
+                  ? ""
+                  : Math.max(0, Number(e.target.value)),
               )
             }
             inputProps={{ min: 0 }}
@@ -109,7 +117,9 @@ export const FiltriBarche: React.FC<FiltriBarcheProps> = ({
             onChange={(e) =>
               handleChange(
                 "lunghezzaMax",
-                e.target.value === "" ? "" : Number(e.target.value),
+                e.target.value === ""
+                  ? ""
+                  : Math.max(0, Number(e.target.value)),
               )
             }
             inputProps={{ min: 0 }}
