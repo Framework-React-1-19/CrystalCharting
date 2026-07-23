@@ -25,7 +25,7 @@ export function Login() {
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     if (!password) {
       setError(true);
