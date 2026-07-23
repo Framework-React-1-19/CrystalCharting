@@ -25,25 +25,19 @@ export function Login() {
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
     if (!password) {
       setError(true);
       return;
     }
-    setError(false);
 
     if (password === "admin123") {
-      // PASS CORRETTA: Reindirizza all'area riservata
-      navigate("/admin/inserimento");
+      navigate("/adminPage");
+      localStorage.setItem("isAdminAuth", "true");
     } else {
       setError(true);
     }
-    
-    console.log("Password inviata:", password);
-    
-    // Esempio di reindirizzamento post-login:
-    // navigate("/dashboard");
   };
 
   return (
@@ -54,8 +48,7 @@ export function Login() {
         alignItems: "center",
         justifyContent: "center",
         p: 2,
-      }}
-    >
+      }}>
       <Paper
         elevation={4}
         sx={{
@@ -66,8 +59,7 @@ export function Login() {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-        }}
-      >
+        }}>
         {/* Icona di sicurezza */}
         <Avatar
           sx={{
@@ -76,16 +68,18 @@ export function Login() {
             width: 56,
             height: 56,
             boxShadow: 2,
-          }}
-        >
+          }}>
           <LockOutlinedIcon sx={{ fontSize: 32 }} />
         </Avatar>
 
         {/* Intestazione */}
-        <Typography component="h1" variant="h5" fontWeight="bold" mt={1}>
+        <Typography component="h1" variant="h5" sx={{fontWeight: "bold", mt: 1}}>
           Area Riservata
         </Typography>
-        <Typography variant="body2" color="text.secondary" mb={3} textAlign="center">
+        
+        <Typography 
+          variant="body2" 
+          sx={{color: "text.secondary", align: "center", mb: 3}}>
           Inserisci la password di amministrazione per accedere al gestionale staff.
         </Typography>
 
@@ -107,19 +101,21 @@ export function Login() {
               if (error) setError(false);
             }}
             error={error}
-            helperText={error ? "Inserisci la password per continuare" : ""}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="mostra o nascondi password"
-                    onClick={handleClickShowPassword}
-                    edge="end"
-                  >
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
+            helperText={error ? "Password errata o campo vuoto" : ""}
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="mostra o nascondi password"
+                      onClick={handleClickShowPassword}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
             }}
           />
 
@@ -135,13 +131,11 @@ export function Login() {
               fontSize: "1rem",
               fontWeight: "bold",
               borderRadius: 2,
-            }}
-          >
+            }}>
             Accedi
           </Button>
 
-          {/* Torna alla Home / Torna indietro */}
-          <Box display="flex" justifyContent="center" mt={1}>
+          <Box sx={{ display: "flex", justifyContent: "center", mt: 1 }}>
             <Button
               component={Link}
               to="/"

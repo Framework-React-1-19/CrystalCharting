@@ -1,0 +1,14 @@
+[
+  {
+    "idBarca": 1,
+    "nomebarca": "Blitz 350",
+    "tipo": "Gommone",
+    "alimentazione": "Miscela",
+    "capienza": 5,
+    "cabine": "0",
+    "potenza": 15,
+    "descrizione": "gommone leggero a chiglia assemblabile",
+    "lunghezza": 3,
+    "costo_giornaliero": 200
+  }
+]

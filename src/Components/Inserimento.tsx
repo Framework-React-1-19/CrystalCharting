@@ -1,16 +1,17 @@
-import { 
-  Box, 
-  Typography, 
-  TextField, 
-  Button, 
-  FormControl, 
-  InputLabel, 
-  Select, 
-  MenuItem, 
-  Grid,
+import { useState } from "react";
+import {
+  Box,
+  Typography,
+  TextField,
+  Button,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
   Paper,
   Divider,
-  InputAdornment
+  InputAdornment,
+  Stack
 } from "@mui/material";
 
 // Icone MUI
@@ -18,72 +19,135 @@ import DirectionsBoatIcon from "@mui/icons-material/DirectionsBoat";
 import SendIcon from "@mui/icons-material/Send";
 
 export function Inserimento() {
+
+  // Funzione all'evento submit del form
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    const form = e.currentTarget;
+
+    //creazione del body per la request API
+    const dati = new FormData(form);
+    
+    try {
+      const response = await fetch('https://crystalcharting.awardspace.net/api.php?action=add_barca', {
+        method: 'POST',
+        body: dati,
+      });
+
+      const risposta = await response.text();
+
+      if (risposta.trim() === "OK") {
+        alert("Barca aggiunta con successo!");
+        form.reset(); // Pulisce i campi del form
+      } else {
+        alert("Errore dal server: " + risposta);
+      }
+    } catch (error) {
+      console.error("Errore di rete:", error);
+      alert("Impossibile contattare il server. Controlla la connessione!");
+    }
+  };
+
   return (
-    <Box sx={{ maxWidth: 900, margin: "auto", p: { xs: 2, md: 4 } }}>
-      <Paper elevation={3} sx={{ p: { xs: 3, md: 4 }, borderRadius: 2 }}>
-        
-        {/* Header con Titolo e Icona */}
-        <Box display="flex" alignItems="center" justifyContent="center" gap={1.5} mb={3}>
-          <DirectionsBoatIcon color="primary" sx={{ fontSize: 36 }} />
-          <Typography variant="h4" component="h1" fontWeight="bold" color="primary">
+    <Box sx={{ maxWidth: 650, margin: "auto", p: { xs: 2, md: 3 } }}>
+      <Paper elevation={3} sx={{ p: { xs: 3, md: 4 }, borderRadius: 3 }}>
+
+        {/* Header */}
+        <Box display="flex" alignItems="center" justifyContent="center" gap={2} mb={3}>
+          <DirectionsBoatIcon color="primary" sx={{ fontSize: 32 }} />
+          <Typography variant="h5" component="h1" sx={{fontWeight: "bold", color: "primary"}}>
+            {/* variant="h5": Definisce la dimensione e lo stile del testo - component="h1": Cambia il tag HTML generato*/}
             Inserisci Nuova Imbarcazione
           </Typography>
         </Box>
 
-        <form>
-          <Grid container spacing={3}>
+        <form onSubmit={handleSubmit}>
+          <Stack spacing={2}> {/* spazio tra gli elementi */}
 
-            {/* SEZIONE 1: Informazioni Generali */}
-            <Grid item xs={12}>
-              <Typography variant="h6" color="text.secondary" gutterBottom>
-                Informazioni Principali
-              </Typography>
-            </Grid>
+            {/* SEZIONE 1: Info Principali */}
+            <Typography variant="subtitle1" sx={{fontWeight: "bold", color: "text.secondary"}}>
+              Informazioni Principali
+            </Typography>
 
-            {/* Nome */}
-            <Grid item xs={12} sm={6}>
-              <TextField
-                fullWidth
-                required
-                id="nome"
-                name="nome"
-                label="Nome Barca"
-                placeholder="Es: Poseidon"
-                variant="outlined"
-              />
-            </Grid>
+            {/* input nome */}
+            <TextField
+              fullWidth
+              required
+              id="nomebarca"
+              name="nomebarca"
+              label="Nome Barca"
+              placeholder="Es: Poseidon"
+              sx={{ mt : 2}}/>
 
-            {/* Tipo */}
-            <Grid item xs={12} sm={6}>
-              <FormControl fullWidth required>
+            {/* scelta tipo barca COMBOBOX */}
+            <Box sx={{ gap:2, display: "flex", flexDirection: { xs: "column", sm: "row" } }}>
+              <FormControl fullWidth required sx={{ mt : 2 }}>
                 <InputLabel id="tipo-label">Tipo di Barca</InputLabel>
                 <Select
                   labelId="tipo-label"
                   id="tipo"
                   name="tipo"
                   defaultValue=""
-                  label="Tipo di Barca"
-                >
+                  label="Tipo di Barca">
                   <MenuItem value="Vela">Vela</MenuItem>
-                  <MenuItem value="Motore">Motore</MenuItem>
+                  <MenuItem value="Motore">Vetroresina</MenuItem>
                   <MenuItem value="Catamarano">Catamarano</MenuItem>
                   <MenuItem value="Yacht">Yacht</MenuItem>
                   <MenuItem value="Gommone">Gommone</MenuItem>
                   <MenuItem value="Altro">Altro</MenuItem>
                 </Select>
               </FormControl>
-            </Grid>
 
-            {/* SEZIONE 2: Dettagli Tecnici e Capienza */}
-            <Grid item xs={12}>
-              <Divider sx={{ my: 1 }} />
-              <Typography variant="h6" color="text.secondary" gutterBottom sx={{ mt: 1 }}>
-                Specifiche Tecniche & Spazi
-              </Typography>
-            </Grid>
+            {/* scelta alimentazione COMBOBOX */}
+              <FormControl fullWidth required sx={{ mt : 2 }}>
+                <InputLabel id="alimentazione-label">Alimentazione</InputLabel>
+                <Select
+                  labelId="alimentazione-label"
+                  id="alimentazione"
+                  name="alimentazione"
+                  defaultValue=""
+                  label="Alimentazione">
+                  <MenuItem value="Benzina">Benzina</MenuItem>
+                  <MenuItem value="Diesel">Diesel</MenuItem>
+                  <MenuItem value="Elettrica">Elettrica</MenuItem>
+                  <MenuItem value="Nessuna (Vela pura)">Nessuna (Vela pura)</MenuItem>
+                </Select>
+              </FormControl>
+            </Box>
 
-            {/* Lunghezza */}
-            <Grid item xs={12} sm={6} md={4}>
+            <Divider 
+              sx={{ 
+                height: "2px",
+                border: "none",
+                position: "relative",
+                overflow: "hidden",
+                backgroundColor: "#bae6fd",
+                my: 3,
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: "-100%",
+                  width: "100%",
+                  height: "100%",
+                  background: "linear-gradient(90deg, transparent, #0284c7, transparent)",
+                  animation: "wave 3s infinite linear",
+                },
+                "@keyframes wave": {
+                  "0%": { left: "-100%" },
+                  "100%": { left: "100%" }
+                }
+              }} 
+            />
+
+            {/* SEZIONE 2: Specifiche Tecniche */}
+            <Typography variant="subtitle1" sx={{fontWeight: "bold", color: "text.secondary"}}>
+              Specifiche Tecniche & Spazi
+            </Typography>
+
+            {/* lunghezza */}
+            <Box sx={{display: "flex", gap: 2, flexDirection: { xs: "column", sm: "row" } }}>
               <TextField
                 fullWidth
                 required
@@ -91,140 +155,191 @@ export function Inserimento() {
                 id="lunghezza"
                 name="lunghezza"
                 label="Lunghezza"
-                placeholder="Es: 12.5"
-                InputProps={{
-                  endAdornment: <InputAdornment position="end">m</InputAdornment>,
-                }}
-                inputProps={{ step: "0.1", min: 0 }}
-              />
-            </Grid>
+                placeholder="12.5"
+                sx={{ mt : 0.5 }}
+                slotProps={{
+                  input: {
+                    startAdornment: <InputAdornment position="start">Metri</InputAdornment>,
+                  },
+                  htmlInput: {
+                    step: "0.25",
+                    min: 0,
+                  }
+                }}/>
+            </Box>
 
-            {/* Alimentazione */}
-            <Grid item xs={12} sm={6} md={4}>
-              <FormControl fullWidth required>
-                <InputLabel id="alimentazione-label">Alimentazione</InputLabel>
-                <Select
-                  labelId="alimentazione-label"
-                  id="alimentazione"
-                  name="alimentazione"
-                  defaultValue=""
-                  label="Alimentazione"
-                >
-                  <MenuItem value="Benzina">Benzina</MenuItem>
-                  <MenuItem value="Diesel">Diesel</MenuItem>
-                  <MenuItem value="Elettrica">Elettrica</MenuItem>
-                  <MenuItem value="Ibrida">Ibrida</MenuItem>
-                  <MenuItem value="Nessuna (Vela pura)">Nessuna (Vela pura)</MenuItem>
-                </Select>
-              </FormControl>
-            </Grid>
-
-            {/* Cabine */}
-            <Grid item xs={12} sm={6} md={4}>
+            {/* cabine */}
+            <Box sx={{display: "flex", gap: 2, flexDirection: { xs: "column", sm: "row" } }}>
               <TextField
                 fullWidth
                 type="number"
                 id="cabine"
                 name="cabine"
                 label="Numero Cabine"
-                placeholder="Es: 3"
-                inputProps={{ min: 0 }}
-              />
-            </Grid>
+                placeholder="3"
+                sx={{ mt : 2}}
+                inputProps={{
+                  htmlInput: {
+                    step: "1",
+                    min: 0,
+                  }
+                }}/>
 
-            {/* Capienza Persone */}
-            <Grid item xs={12} sm={6} md={4}>
               <TextField
                 fullWidth
                 required
                 type="number"
                 id="capienza"
                 name="capienza"
-                label="Capienza Passeggeri"
-                placeholder="Es: 8"
+                label="Capienza"
+                placeholder="8"
+                sx={{ mt : 2}}
                 InputProps={{
                   endAdornment: <InputAdornment position="end">persone</InputAdornment>,
                 }}
-                inputProps={{ min: 1 }}
-              />
-            </Grid>
+                inputProps={{ min: 1 }}/>
+            </Box>
 
-            {/* Capacità Serbatoio/Carico */}
-            <Grid item xs={12} sm={6} md={4}>
+            
+            <Box sx={{display: "flex", gap: 2, flexDirection: { xs: "column", sm: "row" } }}>
+            {/* capacità del serbatoio del carburante 
               <TextField
                 fullWidth
                 type="number"
                 id="capacita"
                 name="capacita"
                 label="Capacità Serbatoio"
-                placeholder="Es: 200"
-                InputProps={{
-                  endAdornment: <InputAdornment position="end">L</InputAdornment>,
-                }}
-                inputProps={{ min: 0 }}
-              />
-            </Grid>
+                placeholder="200"
+                sx={{ mt : 2}}
+                slotProps={{
+                  input: {
+                    startAdornment: <InputAdornment position="start">Litri</InputAdornment>,
+                  },
+                  htmlInput: {
+                    step: "0.1",
+                    min: 0,
+                  }
+                }}/>*/}
 
-            {/* Costo Giornaliero */}
-            <Grid item xs={12} sm={6} md={4}>
+              {/* potenza */}
+              <TextField
+                fullWidth
+                type="number"
+                id="potenza"
+                name="potenza"
+                label="Potenza Motore"
+                placeholder="150"
+                sx={{ mt : 2}}
+                slotProps={{
+                  input: {
+                    startAdornment: <InputAdornment position="start">kW</InputAdornment>,
+                  },
+                  htmlInput: {
+                    step: "0.1",
+                    min: 0,
+                  }
+                }}/>
+            </Box>
+
+            <Divider 
+              sx={{ 
+                height: "2px",
+                border: "none",
+                position: "relative",
+                overflow: "hidden",
+                backgroundColor: "#bae6fd",
+                my: 3,
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: "-100%",
+                  width: "100%",
+                  height: "100%",
+                  background: "linear-gradient(90deg, transparent, #0284c7, transparent)",
+                  animation: "wave 3s infinite linear",
+                },
+                "@keyframes wave": {
+                  "0%": { left: "-100%" },
+                  "100%": { left: "100%" }
+                }
+              }} 
+            />
+
+            {/* SEZIONE 3: Descrizione */}
+            <Typography variant="subtitle1" sx={{fontWeight: "bold", color: "text.secondary"}}>
+              Descrizione
+            </Typography>
+
+            <TextField 
+              fullWidth
+              multiline
+              rows={3}
+              id="descrizione"
+              name="descrizione"
+              label="Note e dettagli aggiuntivi"
+              placeholder="Esempio: Dotazioni di bordo, skipper incluso, ecc..."/>
+
+              <Divider 
+              sx={{ 
+                height: "2px",
+                border: "none",
+                position: "relative",
+                overflow: "hidden",
+                backgroundColor: "#bae6fd",
+                my: 3,
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: "-100%",
+                  width: "100%",
+                  height: "100%",
+                  background: "linear-gradient(90deg, transparent, #0284c7, transparent)",
+                  animation: "wave 3s infinite linear",
+                },
+                "@keyframes wave": {
+                  "0%": { left: "-100%" },
+                  "100%": { left: "100%" }
+                }
+              }} 
+            />
+
+              {/* costo */}
+              <Typography variant="subtitle1" sx={{fontWeight: "bold", color: "text.secondary"}}>
+              Costo
+              </Typography>
               <TextField
                 fullWidth
                 required
                 type="number"
-                id="costoGiornaliero"
-                name="costoGiornaliero"
+                id="costo_giornaliero"
+                name="costo_giornaliero"
                 label="Costo Giornaliero"
-                placeholder="Es: 350"
+                placeholder="350"
                 InputProps={{
                   startAdornment: <InputAdornment position="start">€</InputAdornment>,
                   endAdornment: <InputAdornment position="end">/giorno</InputAdornment>,
                 }}
-                inputProps={{ min: 0 }}
-              />
-            </Grid>
+                inputProps={{ min: 0 }}/>
 
-            {/* SEZIONE 3: Descrizione */}
-            <Grid item xs={12}>
-              <Divider sx={{ my: 1 }} />
-              <Typography variant="h6" color="text.secondary" gutterBottom sx={{ mt: 1 }}>
-                Descrizione & Dettagli
-              </Typography>
-            </Grid>
+            {/* Pulsante Invio */}
+            <Button
+              type="submit"
+              variant="contained"
+              size="large"
+              endIcon={<SendIcon />}
+              sx={{
+                mt: 1,
+                py: 1.3,
+                fontSize: "1rem",
+                fontWeight: "bold",
+                borderRadius: 2
+              }}>
+              Salva Imbarcazione
+            </Button>
 
-            {/* Descrizione */}
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                multiline
-                rows={4}
-                id="descrizione"
-                name="descrizione"
-                label="Descrizione Aggiuntiva"
-                placeholder="Inserisci dettagli su dotazioni di bordo, skipper incluso, regole di navigazione, ecc..."
-              />
-            </Grid>
-
-            {/* Pulsante Invia */}
-            <Grid item xs={12}>
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                size="large"
-                fullWidth
-                endIcon={<SendIcon />}
-                sx={{ 
-                  mt: 2, 
-                  py: 1.5, 
-                  fontSize: "1.1rem", 
-                  fontWeight: "bold" 
-                }}
-              >
-                Salva Imbarcazione
-              </Button>
-            </Grid>
-
-          </Grid>
+          </Stack>
         </form>
       </Paper>
     </Box>

@@ -3,10 +3,8 @@ import { Contenitore } from "./Components/Contenitore";
 import { Home } from "./Components/Home";
 import { Catalogo } from "./Components/Catalogo";
 import { Admin } from "./Components/Admin";
-import { Login } from "./Components/Login";
-import { Inserimento } from "./Components/Inserimento";
-import { Prenotazioni } from "./Components/Prenotazioni";
 import { NotFound } from "./Components/NotFound";
+import { Login } from "./Components/Login";
 
 function App() {
   return (
@@ -17,11 +15,8 @@ function App() {
 
           <Route path="catalogo" element={<Catalogo />} />
 
-          <Route path="admin" element={<Admin />}>
-            <Route index element={<Login />} />
-            <Route path="inserimento" element={<Inserimento />} />
-            <Route path="prenotazioni" element={<Prenotazioni />} />
-          </Route>
+          <Route path="admin" element={<Login />} />
+          <Route path="adminPage" element={<Admin />} />
 
           <Route path="*" element={<NotFound />} />
         </Route>
