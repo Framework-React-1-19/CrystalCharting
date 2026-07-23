@@ -36,7 +36,9 @@ export const Catalogo: React.FC = () => {
     const fetchBarche = async () => {
       try {
         setLoading(true);
-        const response = await fetch("../../public/testbarca.json");
+        const response = await fetch(
+          "https://crystalcharting.awardspace.net/api.php?action=get_barche",
+        );
 
         if (!response.ok) {
           throw new Error(`Errore HTTP: ${response.status}`);
