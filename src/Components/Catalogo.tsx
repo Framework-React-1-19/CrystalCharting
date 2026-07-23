@@ -36,9 +36,7 @@ export const Catalogo: React.FC = () => {
     const fetchBarche = async () => {
       try {
         setLoading(true);
-        const response = await fetch(
-          "https://crystalcharting.awardspace.net/api.php?action=get_barche",
-        );
+        const response = await fetch("../../public/testbarca.json");
 
         if (!response.ok) {
           throw new Error(`Errore HTTP: ${response.status}`);
@@ -113,8 +111,10 @@ export const Catalogo: React.FC = () => {
         variant="h3"
         component="h1"
         gutterBottom
-        textAlign="center"
-        fontWeight="bold"
+        sx={{
+          textAlign: "center",
+          fontWeight: "bold",
+        }}
       >
         Catalogo Imbarcazioni
       </Typography>
@@ -129,7 +129,7 @@ export const Catalogo: React.FC = () => {
 
       {/* Indicatore di caricamento */}
       {loading && (
-        <Box display="flex" justifyContent="center" my={5}>
+        <Box sx={{ display: "flex", justifyContent: "center", my: 5 }}>
           <CircularProgress />
         </Box>
       )}
@@ -152,7 +152,7 @@ export const Catalogo: React.FC = () => {
       {!loading && !error && (
         <Grid container spacing={3}>
           {barcheFiltrate.map((barca) => (
-            <Grid item key={barca.idBarca} xs={12} sm={6} md={4}>
+            <Grid item key={barca.idBarca} sx={{ xs: 12, sm: 6, md: 4 }}>
               <BoatCard boat={barca} onSelect={handleOpenModal} />
             </Grid>
           ))}
