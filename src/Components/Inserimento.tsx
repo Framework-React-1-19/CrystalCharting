@@ -72,19 +72,19 @@ export function Inserimento() {
       <Paper elevation={3} sx={{ p: { xs: 3, md: 4 }, borderRadius: 3 }}>
 
         {/* Header */}
-        <Box display="flex" alignItems="center" justifyContent="center" gap={1.5} mb={3}>
+        <Box display="flex" alignItems="center" justifyContent="center" gap={2} mb={3}>
           <DirectionsBoatIcon color="primary" sx={{ fontSize: 32 }} />
-          <Typography variant="h5" component="h1" fontWeight="bold" color="primary">
+          <Typography variant="h5" component="h1" sx={{fontWeight: "bold", color: "primary"}}>
             {/* variant="h5": Definisce la dimensione e lo stile del testo - component="h1": Cambia il tag HTML generato*/}
             Inserisci Nuova Imbarcazione
           </Typography>
         </Box>
 
         <form onSubmit={handleSubmit}>
-          <Stack spacing={1.6}> {/* spazio tra gli elementi */}
+          <Stack spacing={2}> {/* spazio tra gli elementi */}
 
             {/* SEZIONE 1: Info Principali */}
-            <Typography variant="subtitle1" fontWeight="bold" color="text.secondary">
+            <Typography variant="subtitle1" sx={{fontWeight: "bold", color: "text.secondary"}}>
               Informazioni Principali
             </Typography>
 
@@ -95,12 +95,12 @@ export function Inserimento() {
               id="nome"
               name="nome"
               label="Nome Barca"
-              placeholder="Es: Poseidon"/>
-
+              placeholder="Es: Poseidon"
+              sx={{ mt : 2}}/>
 
             {/* scelta tipo barca COMBOBOX */}
-            <Box display="flex" gap={2} flexDirection={{ xs: "column", sm: "row" }}>
-              <FormControl fullWidth required>
+            <Box display="flex" sx={{ gap:2 }} flexDirection={{ xs: "column", sm: "row" }}>
+              <FormControl fullWidth required sx={{ mt : 2 }}>
                 <InputLabel id="tipo-label">Tipo di Barca</InputLabel>
                 <Select
                   labelId="tipo-label"
@@ -118,7 +118,7 @@ export function Inserimento() {
               </FormControl>
 
             {/* scelta alimentazione COMBOBOX */}
-              <FormControl fullWidth required>
+              <FormControl fullWidth required sx={{ mt : 2 }}>
                 <InputLabel id="alimentazione-label">Alimentazione</InputLabel>
                 <Select
                   labelId="alimentazione-label"
@@ -134,10 +134,33 @@ export function Inserimento() {
               </FormControl>
             </Box>
 
-            <Divider sx={{ my: 1 }} />
+            <Divider 
+              sx={{ 
+                height: "2px",
+                border: "none",
+                position: "relative",
+                overflow: "hidden",
+                backgroundColor: "#bae6fd",
+                my: 3,
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: "-100%",
+                  width: "100%",
+                  height: "100%",
+                  background: "linear-gradient(90deg, transparent, #0284c7, transparent)",
+                  animation: "wave 3s infinite linear",
+                },
+                "@keyframes wave": {
+                  "0%": { left: "-100%" },
+                  "100%": { left: "100%" }
+                }
+              }} 
+            />
 
             {/* SEZIONE 2: Specifiche Tecniche */}
-            <Typography variant="subtitle1" fontWeight="bold" color="text.secondary">
+            <Typography variant="subtitle1" sx={{fontWeight: "bold", color: "text.secondary"}}>
               Specifiche Tecniche & Spazi
             </Typography>
 
@@ -151,23 +174,16 @@ export function Inserimento() {
                 name="lunghezza"
                 label="Lunghezza"
                 placeholder="12.5"
-                InputProps={{
-                  endAdornment: <InputAdornment position="end">m</InputAdornment>,
-                }}
-                inputProps={{ step: "0.1", min: 0 }}/>
-
-              {/* potenza */}
-              <TextField
-                fullWidth
-                type="number"
-                id="potenza"
-                name="potenza"
-                label="Potenza Motore"
-                placeholder="150"
-                InputProps={{
-                  endAdornment: <InputAdornment position="end">CV</InputAdornment>,
-                }}
-                inputProps={{ min: 0 }}/>
+                sx={{ mt : 0.5 }}
+                slotProps={{
+                  input: {
+                    startAdornment: <InputAdornment position="start">Metri</InputAdornment>,
+                  },
+                  htmlInput: {
+                    step: "0.25",
+                    min: 0,
+                  }
+                }}/>
             </Box>
 
             {/* cabine */}
@@ -179,7 +195,13 @@ export function Inserimento() {
                 name="cabine"
                 label="Numero Cabine"
                 placeholder="3"
-                inputProps={{ min: 0 }}/>
+                sx={{ mt : 2}}
+                inputProps={{
+                  htmlInput: {
+                    step: "1",
+                    min: 0,
+                  }
+                }}/>
 
               <TextField
                 fullWidth
@@ -189,6 +211,7 @@ export function Inserimento() {
                 name="capienza"
                 label="Capienza"
                 placeholder="8"
+                sx={{ mt : 2}}
                 InputProps={{
                   endAdornment: <InputAdornment position="end">persone</InputAdornment>,
                 }}
@@ -204,12 +227,105 @@ export function Inserimento() {
                 name="capacita"
                 label="Capacità Serbatoio"
                 placeholder="200"
-                InputProps={{
-                  endAdornment: <InputAdornment position="end">L</InputAdornment>,
-                }}
-                inputProps={{ min: 0 }}/>
+                sx={{ mt : 2}}
+                slotProps={{
+                  input: {
+                    startAdornment: <InputAdornment position="start">Litri</InputAdornment>,
+                  },
+                  htmlInput: {
+                    step: "0.1",
+                    min: 0,
+                  }
+                }}/>
 
-            {/* costo */}
+              {/* potenza */}
+              <TextField
+                fullWidth
+                type="number"
+                id="potenza"
+                name="potenza"
+                label="Potenza Motore"
+                placeholder="150"
+                sx={{ mt : 2}}
+                slotProps={{
+                  input: {
+                    startAdornment: <InputAdornment position="start">kW</InputAdornment>,
+                  },
+                  htmlInput: {
+                    step: "0.1",
+                    min: 0,
+                  }
+                }}/>
+            </Box>
+
+            <Divider 
+              sx={{ 
+                height: "2px",
+                border: "none",
+                position: "relative",
+                overflow: "hidden",
+                backgroundColor: "#bae6fd",
+                my: 3,
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: "-100%",
+                  width: "100%",
+                  height: "100%",
+                  background: "linear-gradient(90deg, transparent, #0284c7, transparent)",
+                  animation: "wave 3s infinite linear",
+                },
+                "@keyframes wave": {
+                  "0%": { left: "-100%" },
+                  "100%": { left: "100%" }
+                }
+              }} 
+            />
+
+            {/* SEZIONE 3: Descrizione */}
+            <Typography variant="subtitle1" sx={{fontWeight: "bold", color: "text.secondary"}}>
+              Descrizione
+            </Typography>
+
+            <TextField 
+              fullWidth
+              multiline
+              rows={3}
+              id="descrizione"
+              name="descrizione"
+              label="Note e dettagli aggiuntivi"
+              placeholder="Esempio: Dotazioni di bordo, skipper incluso, ecc..."/>
+
+              <Divider 
+              sx={{ 
+                height: "2px",
+                border: "none",
+                position: "relative",
+                overflow: "hidden",
+                backgroundColor: "#bae6fd",
+                my: 3,
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: "-100%",
+                  width: "100%",
+                  height: "100%",
+                  background: "linear-gradient(90deg, transparent, #0284c7, transparent)",
+                  animation: "wave 3s infinite linear",
+                },
+                "@keyframes wave": {
+                  "0%": { left: "-100%" },
+                  "100%": { left: "100%" }
+                }
+              }} 
+            />
+
+              {/* costo */}
+              <Typography variant="subtitle1" sx={{fontWeight: "bold", color: "text.secondary"}}>
+              Costo
+              </Typography>
               <TextField
                 fullWidth
                 required
@@ -223,23 +339,6 @@ export function Inserimento() {
                   endAdornment: <InputAdornment position="end">/giorno</InputAdornment>,
                 }}
                 inputProps={{ min: 0 }}/>
-            </Box>
-
-            <Divider sx={{ my: 1 }} />
-
-            {/* SEZIONE 3: Descrizione */}
-            <Typography variant="subtitle1" fontWeight="bold" color="text.secondary">
-              Descrizione
-            </Typography>
-
-            <TextField 
-              fullWidth
-              multiline
-              rows={3}
-              id="descrizione"
-              name="descrizione"
-              label="Note e dettagli aggiuntivi"
-              placeholder="Esempio: Dotazioni di bordo, skipper incluso, ecc..."/>
 
             {/* Pulsante Invio */}
             <Button

@@ -72,7 +72,7 @@ export function Login() {
         </Avatar>
 
         {/* Intestazione */}
-        <Typography component="h1" variant="h5" fontWeight="bold" mt={1}>
+        <Typography component="h1" variant="h5" sx={{fontWeight: "bold", mt: 1}}>
           Area Riservata
         </Typography>
         
@@ -103,17 +103,20 @@ export function Login() {
             }}
             error={error}
             helperText={error ? "Password errata o campo vuoto" : ""}
-            InputProps={{
-              endAdornment: (
-                <InputAdornment position="end">
-                  <IconButton
-                    aria-label="mostra o nascondi password"
-                    onClick={handleClickShowPassword}
-                    edge="end">
-                    {showPassword ? <VisibilityOff /> : <Visibility />}
-                  </IconButton>
-                </InputAdornment>
-              ),
+            slotProps={{
+              input: {
+                endAdornment: (
+                  <InputAdornment position="end">
+                    <IconButton
+                      aria-label="mostra o nascondi password"
+                      onClick={handleClickShowPassword}
+                      edge="end"
+                    >
+                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                    </IconButton>
+                  </InputAdornment>
+                ),
+              },
             }}
           />
 
