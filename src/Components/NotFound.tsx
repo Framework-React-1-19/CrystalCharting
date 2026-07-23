@@ -71,8 +71,8 @@ export function NotFound() {
           <Typography
             variant="h1"
             component="div"
-            fontWeight="900"
             sx={{
+              fontWeight: "900",
               fontSize: { xs: "5rem", sm: "7rem" },
               lineHeight: 1,
               letterSpacing: "-2px",
@@ -86,7 +86,7 @@ export function NotFound() {
           <Typography
             variant="h5"
             component="h1"
-            fontWeight="bold"
+            sx={{fontWeight: "bold"}}
             gutterBottom>
             Pagina Non Trovata
           </Typography>

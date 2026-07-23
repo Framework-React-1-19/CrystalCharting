@@ -33,7 +33,8 @@ export function Login() {
     }
 
     if (password === "admin123") {
-      navigate("/admin/inserimento");
+      navigate("/adminPage");
+      localStorage.setItem("isAdminAuth", "true");
     } else {
       setError(true);
     }
@@ -78,9 +79,7 @@ export function Login() {
         
         <Typography 
           variant="body2" 
-          color="text.secondary" 
-          mb={3} 
-          align="center">
+          sx={{color: "text.secondary", align: "center", mb: 3}}>
           Inserisci la password di amministrazione per accedere al gestionale staff.
         </Typography>
 
