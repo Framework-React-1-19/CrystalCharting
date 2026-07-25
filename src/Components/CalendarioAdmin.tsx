@@ -1,3 +1,5 @@
+//https://date-fns.org/docs/Getting-Started
+
 import { useState, useEffect, useCallback } from "react";
 import {
   Box,
@@ -25,81 +27,68 @@ import EventAvailableIcon from "@mui/icons-material/EventAvailable";
 import DirectionsBoatIcon from "@mui/icons-material/DirectionsBoat";
 
 import {
-    format,
-    addMonths,
-    subMonths,
-    startOfWeek,
-    endOfWeek,
-    startOfMonth,
-    endOfMonth,
-    eachDayOfInterval,
-    isSameMonth,
-    isSameDay,
-    parseISO
+  format,
+  addMonths,
+  subMonths,
+  startOfWeek,
+  endOfWeek,
+  startOfMonth,
+  endOfMonth,
+  eachDayOfInterval,
+  isSameMonth,
+  isSameDay,
+  parseISO,
+  isWithinInterval,
+  startOfDay
 } from "date-fns";
 import { it } from "date-fns/locale";
 
+// interfaccia per i dati del json
 export interface Prenotazione {
-    id: string | number;
-    nomebarca: string;
-    cliente: string;
-    data_inizio: string;
-    data_fine: string;
-    note?: string;
+  idPrenotazione: number;
+  idBarca: number;
+  timestamp_prenotazione?: string;
+  data_checkin: string;
+  data_checkout: string;
+  email: string;
+  nome_prenotazione: string;
+  note?: string;
 }
 
-
 export function CalendarioAdmin() {
-    const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
-    const [prenotazioni, setPrenotazioni] = useState<Prenotazione[]>([]);
-    const [loading, setLoading] = useState<boolean>(true);
-    const [selectedDay, setSelectedDay] = useState<Date | null>(null);
-    const [deleteLoadingId, setDeleteLoadingId] = useState<string | number | null>(null);
+  //tipo dato date e nuova istanza da assegnare con usestate
+  const [currentMonth, setCurrentMonth] = useState<Date>(new Date());
+  const [prenotazioni, setPrenotazioni] = useState<Prenotazione[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [selectedDay, setSelectedDay] = useState<Date | null>(null);
 
-    const fetchPrenotazioni = useCallback(async () => {
-        setLoading(true);
-        try {
-            const response = await fetch("https://crystalcharting.awardspace.net/api.php?action=get_prenotazioni");
-            const data = await response.json();
-            setPrenotazioni(Array.isArray(data) ? data : []);
-        } catch (error) {
-            console.error("Errore nel recupero prenotazioni:", error);
-        } finally {
-            setLoading(false);
-        }
-    }, []);
+  // Carica i dati dal file JSON locale - useCallBack è per tenerla in memoria (tipo solo 1 volta viene eseguita)
+  const fetchPrenotazioni = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("/test.json");
+      if (!response.ok) throw new Error("File non trovato");
 
-    useEffect(() => {
-        fetchPrenotazioni();
-    }, [fetchPrenotazioni]);
+      const data = await response.json();
+      setPrenotazioni(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Errore fetch:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-    const handleDelete = async (id: string | number) => {
-        if (!window.confirm("Sei sicuro di voler eliminare questa prenotazione?")) return;
+  useEffect(() => {
+    fetchPrenotazioni();
+  }, [fetchPrenotazioni]); //se cambia eseguo useEffect
 
-        setDeleteLoadingId(id);
-        try {
-            const formData = new FormData();
-            formData.append("action", "delete_prenotazione");
-            formData.append("id", String(id));
+  // Cancella una prenotazione dallo stato di React
+  const handleDelete = (id: number) => {
+    if (!window.confirm("Sei sicuro di voler eliminare questa prenotazione?")) return; //finestra di conferma
+    setPrenotazioni((prev) => prev.filter((p) => p.idPrenotazione !== id));
+  };
 
-            const response = await fetch(`https://crystalcharting.atwebpages.com/api.php?action=delete_prenotazione&id=${id}`, {
-                method: "POST",
-                body: formData,
-            });
-
-            const risposta = await response.text();
-            if (risposta.trim() === "OK") {
-                setPrenotazioni((prev) => prev.filter((p) => String(p.id) !== String(id)));
-            } else {
-                alert("Errore nell'eliminazione: " + risposta);
-            }
-        } catch (error) {
-        alert("Impossibile eliminare la prenotazione.");
-        } finally {
-        setDeleteLoadingId(null);
-        }
-    };
-
+  // Calcoli per la griglia del mese
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(monthStart);
   const startDate = startOfWeek(monthStart, { weekStartsOn: 1 });
@@ -108,89 +97,90 @@ export function CalendarioAdmin() {
   const days = eachDayOfInterval({ start: startDate, end: endDate });
   const weekDays = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"];
 
+  // 2. Funzione per recuperare le prenotazioni di un singolo giorno
   const getPrenotazioniPerGiorno = (day: Date) => {
+    const targetDay = startOfDay(day);
+
     return prenotazioni.filter((p) => {
-      const inizio = parseISO(p.data_inizio);
-      const fine = parseISO(p.data_fine);
-      return day >= inizio && day <= fine;
+      if (!p.data_checkin || !p.data_checkout) return false;
+
+      // Legge i campi data_checkin e data_checkout del JSON
+      const inizio = startOfDay(parseISO(p.data_checkin));
+      const fine = startOfDay(parseISO(p.data_checkout));
+
+      if (isNaN(inizio.getTime()) || isNaN(fine.getTime())) return false;
+
+      return isWithinInterval(targetDay, { start: inizio, end: fine });
     });
   };
 
   const prenotazioniGiornoSelezionato = selectedDay ? getPrenotazioniPerGiorno(selectedDay) : [];
 
   return (
-    <Box sx={{ width: "100%", maxWidth: 800, mx: "auto" }}>
-      <Paper elevation={12} sx={{ p: 2, borderRadius: 3 }}>
+    <Box sx={{ width: "100%", maxWidth: 800, mx: "auto", mt: 3 }}>
+      <Paper elevation={6} sx={{ p: 2.5, borderRadius: 3 }}>
         
-        {/* Intestazione Mese e Navigazione */}
-        <Box sx={{display: "flex", alignItems: "center", mb: 1.5}}>
-          <Box sx={{display: "flex", alignItems: "center", gap: 1 }}>
+        {/* Intestazione Mese e Frecce Navigazione */}
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <EventAvailableIcon color="primary" fontSize="medium" />
 
-            <Stack direction="row" spacing={0.5}>
-                <IconButton size="small" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
-                    <ChevronLeftIcon fontSize="small" />
-                </IconButton>
+            <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
+              <IconButton size="small" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
+                <ChevronLeftIcon fontSize="small" />
+              </IconButton>
 
-                <Typography variant="h6" sx={{ fontWeight: "bold", textTransform: "capitalize", fontSize: "1.1rem" }}>
-                    {format(currentMonth, "MMMM yyyy", { locale: it })}
-                </Typography>
+              <Typography variant="h6" sx={{ fontWeight: "bold", textTransform: "capitalize", minWidth: 140, textAlign: "center" }}>
+                {format(currentMonth, "MMMM yyyy", { locale: it })}
+              </Typography>
 
-                <IconButton size="small" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
-                    <ChevronRightIcon fontSize="small" />
-                </IconButton>
+              <IconButton size="small" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
+                <ChevronRightIcon fontSize="small" />
+              </IconButton>
             </Stack>
           </Box>
 
-          <Stack direction="row" spacing={0.5}>
-            <Button
-              variant="outlined"
-              size="small"
-              onClick={() => setCurrentMonth(new Date())}
-              sx={{ px: 1.5, py: 0.2, fontSize: "0.75rem" }}>
-              Oggi
-            </Button>
-          </Stack>
+          <Button
+            variant="outlined"
+            size="small"
+            onClick={() => setCurrentMonth(new Date())}
+            sx={{ px: 1.5, py: 0.3, fontSize: "0.75rem" }}>
+            Oggi
+          </Button>
         </Box>
 
         {loading ? (
-          <Box sx={{display: "flex", py: 4}}>
-            <CircularProgress size={28} />
+          <Box sx={{ display: "flex", justifyContent: "center", py: 6 }}>
+            <CircularProgress size={32} />
           </Box>
-            ) : (
+        ) : (
           <Box sx={{ width: "100%" }}>
             
-            {/* Giorni della settimana*/}
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: "repeat(7, 1fr)",
-                gap: 0.5,
-                textAlign: "center",
-                mb: 0.5
-              }}>
+            {/* Nomi dei Giorni (Lun, Mar, ...) */}
+            <Box sx={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 0.5, textAlign: "center", mb: 1 }}>
               {weekDays.map((d) => (
-                <Typography
-                  key={d}
-                  variant="caption"
-                  sx={{ fontWeight: "bold", color: "text.secondary", fontSize: "0.75rem" }}>
+                <Typography key={d} variant="caption" sx={{ fontWeight: "bold", color: "text.secondary", fontSize: "0.75rem" }}>
                   {d}
                 </Typography>
               ))}
             </Box>
 
-            {/* Griglia Giorni del Mese */}
-            <Box
-              sx={{
-                display: "grid",
-                gridTemplateColumns: "repeat(7, 1fr)",
-                gap: 0.5
-              }}>
-                
+            {/* Griglia delle Caselle dei Giorni */}
+            <Box sx={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 0.5 }}>
               {days.map((day, idx) => {
                 const inCurrentMonth = isSameMonth(day, monthStart);
                 const isToday = isSameDay(day, new Date());
                 const prenotazioniDelGiorno = getPrenotazioniPerGiorno(day);
+                const isOccupato = prenotazioniDelGiorno.length > 0;
+
+                let bgColor = "background.paper";
+                if (!inCurrentMonth) {
+                  bgColor = "#f8fafc";
+                } else if (isOccupato) {
+                  bgColor = "#fee2e2";
+                } else if (isToday) {
+                  bgColor = "#e0f2fe";
+                }
 
                 return (
                   <Paper
@@ -198,54 +188,49 @@ export function CalendarioAdmin() {
                     variant="outlined"
                     onClick={() => setSelectedDay(day)}
                     sx={{
-                      minHeight: 52,
-                      p: 0.4,
+                      minHeight: 58,
+                      p: 0.5,
                       cursor: "pointer",
-                      boxSizing: "border-box",
-                      backgroundColor: !inCurrentMonth ? "#f8fafc" : isToday ? "#246ac588" : "background.paper",
-                      borderColor: isToday ? "primary.main" : "divider",
-                      borderWidth: isToday ? 2 : 1,
-                      transition: "all 0.15s ease-in-out",
+                      backgroundColor: bgColor,
+                      borderColor: isOccupato ? "#ef4444" : isToday ? "primary.main" : "divider",
+                      borderWidth: isOccupato || isToday ? 2 : 1,
                       "&:hover": {
                         boxShadow: 2,
-                        borderColor: "primary.light"
+                        borderColor: isOccupato ? "#dc2626" : "primary.light"
                       }
-                    }}>
-
-                    {/* Numero Giorno */}
+                    }}
+                  >
                     <Typography
                       variant="caption"
                       sx={{
                         fontSize: "0.75rem",
-                        fontWeight: isToday ? "bold" : "normal",
-                        color: !inCurrentMonth ? "text.disabled" : "text.primary",
-                        lineHeight: 1,
+                        fontWeight: isToday || isOccupato ? "bold" : "normal",
+                        color: !inCurrentMonth ? "text.disabled" : isOccupato ? "#b91c1c" : "text.primary",
                         display: "block"
-                      }}>
-
+                      }}
+                    >
                       {format(day, "d")}
                     </Typography>
 
-                    {/* Chip Prenotazioni */}
-                    <Stack spacing={0.2} sx={{mt:0.3}}>
+                    {/* Chip con il Nome Cliente / Barca */}
+                    <Stack spacing={0.3} sx={{ mt: 0.5 }}>
                       {prenotazioniDelGiorno.slice(0, 1).map((p) => (
                         <Chip
-                          key={p.id}
+                          key={p.idPrenotazione}
                           size="small"
-                          color="primary"
-                          icon={<DirectionsBoatIcon style={{ fontSize: 9 }} />}
-                          label={p.nomebarca}
+                          color="error"
+                          icon={<DirectionsBoatIcon style={{ fontSize: 10, color: "white" }} />}
+                          label={`Barca #${p.idBarca}`}
                           sx={{
-                            height: 14,
+                            height: 16,
                             fontSize: "0.55rem",
+                            fontWeight: "bold",
                             "& .MuiChip-label": { px: 0.4, py: 0 }
-                          }}/>
+                          }}
+                        />
                       ))}
                       {prenotazioniDelGiorno.length > 1 && (
-                        <Typography
-                          variant="caption"
-                          color="text.secondary"
-                          sx={{ fontSize: "0.5rem", lineHeight: 1 }}>
+                        <Typography variant="caption" sx={{ fontSize: "0.5rem", color: "#b91c1c", fontWeight: "bold" }}>
                           + {prenotazioniDelGiorno.length - 1} altri
                         </Typography>
                       )}
@@ -258,7 +243,7 @@ export function CalendarioAdmin() {
         )}
       </Paper>
 
-      {/* Modale Dettagli */}
+      {/* Finestra di Dettaglio quando clicchi un Giorno */}
       <Dialog open={Boolean(selectedDay)} onClose={() => setSelectedDay(null)} maxWidth="xs" fullWidth>
         <DialogTitle sx={{ fontWeight: "bold", fontSize: "0.95rem", py: 1.5 }}>
           {selectedDay && format(selectedDay, "EEEE d MMMM yyyy", { locale: it })}
@@ -266,25 +251,28 @@ export function CalendarioAdmin() {
         <Divider />
         <DialogContent sx={{ py: 1.5 }}>
           {prenotazioniGiornoSelezionato.length === 0 ? (
-            <Typography sx={{color: "text.secondary", textAlign: "center", py: 1.5}}  variant="body2">
+            <Typography sx={{ color: "text.secondary", textAlign: "center", py: 2 }} variant="body2">
               Nessuna prenotazione per questo giorno.
             </Typography>
           ) : (
-            <Stack spacing={1}>
+            <Stack spacing={1.5}>
               {prenotazioniGiornoSelezionato.map((p) => (
-                <Card key={p.id} variant="outlined" sx={{ position: "relative" }}>
-                  <CardContent sx={{ pr: 4, py: 1, "&:last-child": { pb: 1 } }}>
-                    <Typography variant="subtitle2" sx={{ fontWeight: "bold", color: "primary.main" }}>
-                      {p.nomebarca}
+                <Card key={p.idPrenotazione} variant="outlined" sx={{ position: "relative", borderColor: "#fca5a5" }}>
+                  <CardContent sx={{ pr: 5, py: 1.5, "&:last-child": { pb: 1.5 } }}>
+                    <Typography variant="subtitle2" sx={{ fontWeight: "bold", color: "error.main" }}>
+                      Barca #{p.idBarca}
                     </Typography>
-                    <Typography variant="caption" sx={{color: "text.secondary", display: "block"}}>
-                      Cliente: <strong>{p.cliente}</strong>
+                    
+                    <Typography variant="caption" sx={{ color: "text.primary", display: "block", mt: 0.5 }}>
+                      Cliente: <strong>{p.nome_prenotazione}</strong> ({p.email})
                     </Typography>
-                    <Typography variant="caption" sx={{color: "text.secondary", display: "block"}}>
-                      Dal: {p.data_inizio} al {p.data_fine}
+
+                    <Typography variant="caption" sx={{ color: "text.secondary", display: "block" }}>
+                      Dal <strong>{p.data_checkin}</strong> al <strong>{p.data_checkout}</strong>
                     </Typography>
+
                     {p.note && (
-                      <Typography variant="caption"  sx={{color: "text.secondary", display: "block", fontStyle: "italic"}}>
+                      <Typography variant="caption" sx={{ color: "text.secondary", display: "block", fontStyle: "italic", mt: 0.5 }}>
                         Note: {p.note}
                       </Typography>
                     )}
@@ -293,14 +281,9 @@ export function CalendarioAdmin() {
                       <IconButton
                         color="error"
                         size="small"
-                        disabled={deleteLoadingId === p.id}
-                        onClick={() => handleDelete(p.id)}
-                        sx={{ position: "absolute", top: 4, right: 4 }}>
-                        {deleteLoadingId === p.id ? (
-                          <CircularProgress size={14} color="error" />
-                        ) : (
-                          <DeleteIcon fontSize="small" />
-                        )}
+                        onClick={() => handleDelete(p.idPrenotazione)}
+                        sx={{ position: "absolute", top: 8, right: 8 }}>
+                        <DeleteIcon fontSize="small" />
                       </IconButton>
                     </Tooltip>
                   </CardContent>

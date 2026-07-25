@@ -1,0 +1,47 @@
+[
+  {
+    "idPrenotazione": 101,
+    "idBarca": 1,
+    "timestamp_prenotazione": "2026-06-10T14:23:00Z",
+    "data_checkin": "2026-07-01",
+    "data_checkout": "2026-07-03",
+    "email": "mario.rossi@example.com",
+    "nome_prenotazione": "Mario Rossi"
+  },
+  {
+    "idPrenotazione": 102,
+    "idBarca": 3,
+    "timestamp_prenotazione": "2026-06-15T09:45:12Z",
+    "data_checkin": "2026-07-20",
+    "data_checkout": "2026-07-27",
+    "email": "giuseppe.verdi@company.it",
+    "nome_prenotazione": "Giuseppe Verdi"
+  },
+  {
+    "idPrenotazione": 103,
+    "idBarca": 2,
+    "timestamp_prenotazione": "2026-07-01T18:10:00Z",
+    "data_checkin": "2026-08-05",
+    "data_checkout": "2026-08-12",
+    "email": "f.bianchi@gmail.com",
+    "nome_prenotazione": "Francesca Bianchi"
+  },
+  {
+    "idPrenotazione": 104,
+    "idBarca": 4,
+    "timestamp_prenotazione": "2026-07-12T11:05:40Z",
+    "data_checkin": "2026-08-15",
+    "data_checkout": "2026-08-22",
+    "email": "luca.romano@outlook.it",
+    "nome_prenotazione": "Luca Romano"
+  },
+  {
+    "idPrenotazione": 105,
+    "idBarca": 5,
+    "timestamp_prenotazione": "2026-07-20T16:30:25Z",
+    "data_checkin": "2026-09-01",
+    "data_checkout": "2026-09-04",
+    "email": "elena.gialli@techfirm.com",
+    "nome_prenotazione": "Elena Gialli"
+  }
+]
