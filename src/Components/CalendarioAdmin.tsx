@@ -97,7 +97,7 @@ export function CalendarioAdmin() {
   const days = eachDayOfInterval({ start: startDate, end: endDate });
   const weekDays = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"];
 
-  // 2. Funzione per recuperare le prenotazioni di un singolo giorno
+  //Funzione per recuperare le prenotazioni di un singolo giorno
   const getPrenotazioniPerGiorno = (day: Date) => {
     const targetDay = startOfDay(day);
 
@@ -108,9 +108,10 @@ export function CalendarioAdmin() {
       const inizio = startOfDay(parseISO(p.data_checkin));
       const fine = startOfDay(parseISO(p.data_checkout));
 
-      if (isNaN(inizio.getTime()) || isNaN(fine.getTime())) return false;
+      //prevenzione errore nella data o time
+      if (isNaN(inizio.getTime()) || isNaN(fine.getTime())) return false; 
 
-      return isWithinInterval(targetDay, { start: inizio, end: fine });
+      return isWithinInterval(targetDay, { start: inizio, end: fine }); //fn di date-fns
     });
   };
 
@@ -125,15 +126,18 @@ export function CalendarioAdmin() {
           <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
             <EventAvailableIcon color="primary" fontSize="medium" />
 
+            {/* in dietro di un mese */}
             <Stack direction="row" spacing={0.5} sx={{ alignItems: "center" }}>
               <IconButton size="small" onClick={() => setCurrentMonth(subMonths(currentMonth, 1))}>
                 <ChevronLeftIcon fontSize="small" />
               </IconButton>
 
+              {/* titolo mese + anno */}
               <Typography variant="h6" sx={{ fontWeight: "bold", textTransform: "capitalize", minWidth: 140, textAlign: "center" }}>
                 {format(currentMonth, "MMMM yyyy", { locale: it })}
               </Typography>
 
+              {/* in avanti di un mese */}
               <IconButton size="small" onClick={() => setCurrentMonth(addMonths(currentMonth, 1))}>
                 <ChevronRightIcon fontSize="small" />
               </IconButton>
@@ -198,8 +202,8 @@ export function CalendarioAdmin() {
                         boxShadow: 2,
                         borderColor: isOccupato ? "#dc2626" : "primary.light"
                       }
-                    }}
-                  >
+                    }}>
+
                     <Typography
                       variant="caption"
                       sx={{
@@ -207,12 +211,12 @@ export function CalendarioAdmin() {
                         fontWeight: isToday || isOccupato ? "bold" : "normal",
                         color: !inCurrentMonth ? "text.disabled" : isOccupato ? "#b91c1c" : "text.primary",
                         display: "block"
-                      }}
-                    >
+                      }}>
+
                       {format(day, "d")}
                     </Typography>
 
-                    {/* Chip con il Nome Cliente / Barca */}
+                    {/* Chip con il Nome / Barca */}
                     <Stack spacing={0.3} sx={{ mt: 0.5 }}>
                       {prenotazioniDelGiorno.slice(0, 1).map((p) => (
                         <Chip
@@ -259,6 +263,7 @@ export function CalendarioAdmin() {
               {prenotazioniGiornoSelezionato.map((p) => (
                 <Card key={p.idPrenotazione} variant="outlined" sx={{ position: "relative", borderColor: "#fca5a5" }}>
                   <CardContent sx={{ pr: 5, py: 1.5, "&:last-child": { pb: 1.5 } }}>
+                    {/*elementi della prenotazione nella nodale */}
                     <Typography variant="subtitle2" sx={{ fontWeight: "bold", color: "error.main" }}>
                       Barca #{p.idBarca}
                     </Typography>
