@@ -8,7 +8,6 @@ import {
   Select,
   MenuItem,
   Paper,
-  Divider,
   InputAdornment,
   Stack
 } from "@mui/material";
@@ -16,6 +15,7 @@ import {
 // Icone MUI
 import DirectionsBoatIcon from "@mui/icons-material/DirectionsBoat";
 import SendIcon from "@mui/icons-material/Send";
+import { BoatDivider } from "./BoatDivider";
 
 export function Inserimento() {
 
@@ -115,30 +115,7 @@ export function Inserimento() {
               </FormControl>
             </Box>
 
-            <Divider 
-              sx={{ 
-                height: "2px",
-                border: "none",
-                position: "relative",
-                overflow: "hidden",
-                backgroundColor: "#bae6fd",
-                my: 3,
-                "&::after": {
-                  content: '""',
-                  position: "absolute",
-                  top: 0,
-                  left: "-100%",
-                  width: "100%",
-                  height: "100%",
-                  background: "linear-gradient(90deg, transparent, #0284c7, transparent)",
-                  animation: "wave 3s infinite linear",
-                },
-                "@keyframes wave": {
-                  "0%": { left: "-100%" },
-                  "100%": { left: "100%" }
-                }
-              }} 
-            />
+            <BoatDivider />
 
             {/* SEZIONE 2: Specifiche Tecniche */}
             <Typography variant="subtitle1" sx={{fontWeight: "bold", color: "text.secondary"}}>
@@ -240,30 +217,7 @@ export function Inserimento() {
                 }}/>
             </Box>
 
-            <Divider 
-              sx={{ 
-                height: "2px",
-                border: "none",
-                position: "relative",
-                overflow: "hidden",
-                backgroundColor: "#bae6fd",
-                my: 3,
-                "&::after": {
-                  content: '""',
-                  position: "absolute",
-                  top: 0,
-                  left: "-100%",
-                  width: "100%",
-                  height: "100%",
-                  background: "linear-gradient(90deg, transparent, #0284c7, transparent)",
-                  animation: "wave 3s infinite linear",
-                },
-                "@keyframes wave": {
-                  "0%": { left: "-100%" },
-                  "100%": { left: "100%" }
-                }
-              }} 
-            />
+            <BoatDivider />
 
             {/* SEZIONE 3: Descrizione */}
             <Typography variant="subtitle1" sx={{fontWeight: "bold", color: "text.secondary"}}>
@@ -277,50 +231,28 @@ export function Inserimento() {
               id="descrizione"
               name="descrizione"
               label="Note e dettagli aggiuntivi"
-              placeholder="Esempio: Dotazioni di bordo, skipper incluso, ecc..."/>
-
-              <Divider 
-              sx={{ 
-                height: "2px",
-                border: "none",
-                position: "relative",
-                overflow: "hidden",
-                backgroundColor: "#bae6fd",
-                my: 3,
-                "&::after": {
-                  content: '""',
-                  position: "absolute",
-                  top: 0,
-                  left: "-100%",
-                  width: "100%",
-                  height: "100%",
-                  background: "linear-gradient(90deg, transparent, #0284c7, transparent)",
-                  animation: "wave 3s infinite linear",
-                },
-                "@keyframes wave": {
-                  "0%": { left: "-100%" },
-                  "100%": { left: "100%" }
-                }
-              }} 
+              placeholder="Esempio: Dotazioni di bordo, skipper incluso, ecc..."
             />
 
-              {/* costo */}
-              <Typography variant="subtitle1" sx={{fontWeight: "bold", color: "text.secondary"}}>
-              Costo
-              </Typography>
-              <TextField
-                fullWidth
-                required
-                type="number"
-                id="costo_giornaliero"
-                name="costo_giornaliero"
-                label="Costo Giornaliero"
-                placeholder="350"
-                InputProps={{
-                  startAdornment: <InputAdornment position="start">€</InputAdornment>,
-                  endAdornment: <InputAdornment position="end">/giorno</InputAdornment>,
-                }}
-                inputProps={{ min: 0 }}/>
+            <BoatDivider />
+
+            {/* costo */}
+            <Typography variant="subtitle1" sx={{fontWeight: "bold", color: "text.secondary"}}>
+            Costo
+            </Typography>
+            <TextField
+              fullWidth
+              required
+              type="number"
+              id="costo_giornaliero"
+              name="costo_giornaliero"
+              label="Costo Giornaliero"
+              placeholder="350"
+              InputProps={{
+                startAdornment: <InputAdornment position="start">€</InputAdornment>,
+                endAdornment: <InputAdornment position="end">/giorno</InputAdornment>,
+              }}
+              inputProps={{ min: 0 }}/>
 
             {/* Pulsante Invio */}
             <Button
