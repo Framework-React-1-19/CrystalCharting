@@ -113,8 +113,7 @@ export function Home() {
               mx: "auto",
               opacity: 0.95,
               textShadow: "0px 1px 4px rgba(0,0,0,0.6)",
-            }}
-          >
+            }}>
             Esplora le acque più affascinanti a bordo delle nostre imbarcazioni
             di lusso. Noleggio semplice, trasparente e indimenticabile.
           </Typography>
@@ -132,8 +131,28 @@ export function Home() {
                 fontWeight: "bold",
                 borderRadius: 2,
                 boxShadow: 3,
-              }}
-            >
+                position: "relative",
+                overflow: "hidden",
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  top: 0,
+                  left: "-100%",
+                  width: "100%",
+                  height: "100%",
+                  background:
+                    "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent)",
+                  animation: "wave 3s infinite linear",
+                },
+                "@keyframes wave": {
+                  "0%": { left: "-100%" },
+                  "100%": { left: "100%" },
+                },
+                "&:hover": {
+                  transform: "scale(1.02)",
+                  transition: "transform 0.2s",
+                },
+              }}>
               Esplora la Flotta
             </Button>
           </Box>
