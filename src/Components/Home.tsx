@@ -11,7 +11,6 @@ import DirectionsBoatIcon from "@mui/icons-material/DirectionsBoat";
 import AnchorIcon from "@mui/icons-material/Anchor";
 import SecurityIcon from "@mui/icons-material/Security";
 import SupportAgentIcon from "@mui/icons-material/SupportAgent";
-// import { heroVideo } from "https://videocdn.cdnpk.net/videos/26dd167c-2cc9-4e1f-bc49-e1890b1a40f7/horizontal/previews/clear/large.mp4?token=exp=1784804686~hmac=506b076690d88e567d128b606581b3912fcecae8437d5356fd4f4d6faa29016b";
 
 const FEATURES = [
   {
@@ -64,7 +63,7 @@ export function Home() {
           loop
           muted
           playsInline
-          // src={heroVideo}
+          src="/BoatVideo.mp4"
           sx={{
             position: "absolute",
             top: 0,
