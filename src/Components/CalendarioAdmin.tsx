@@ -63,6 +63,7 @@ export function CalendarioAdmin() {
   const [selectedDay, setSelectedDay] = useState<Date | null>(null);
 
   // Carica i dati dal file JSON locale - useCallBack è per tenerla in memoria (tipo solo 1 volta viene eseguita)
+  //https://mimo.org/glossary/react/usecallback-hook
   const fetchPrenotazioni = useCallback(async () => {
     setLoading(true);
     try {

@@ -37,7 +37,7 @@ export const Catalogo: React.FC = () => {
       try {
         setLoading(true);
         const response = await fetch(
-          "https://crystalcharting.awardspace.net/api.php?action=get_barche",
+          "/testbarca.json",
         );
 
         if (!response.ok) {
@@ -108,7 +108,7 @@ export const Catalogo: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4 }}>
+    <Container maxWidth="lg" sx={{ py: 4}}>
       <Typography
         variant="h3"
         component="h1"
@@ -116,8 +116,7 @@ export const Catalogo: React.FC = () => {
         sx={{
           textAlign: "center",
           fontWeight: "bold",
-        }}
-      >
+        }}>
         Catalogo Imbarcazioni
       </Typography>
 
@@ -126,8 +125,7 @@ export const Catalogo: React.FC = () => {
         filters={filters}
         onFilterChange={setFilters}
         tipiDisponibili={tipiDisponibili}
-        onReset={() => setFilters(INITIAL_FILTERS)}
-      />
+        onReset={() => setFilters(INITIAL_FILTERS)}/>
 
       {/* Indicatore di caricamento */}
       {loading && (
@@ -152,7 +150,7 @@ export const Catalogo: React.FC = () => {
 
       {/* Griglia delle Card Barche */}
       {!loading && !error && (
-        <Grid container spacing={3}>
+        <Grid container spacing={3} sx={{justifyContent: "center"}}>
           {barcheFiltrate.map((barca) => (
             <Grid item key={barca.idBarca} sx={{ xs: 12, sm: 6, md: 4 }}>
               <BoatCard boat={barca} onSelect={handleOpenModal} />
