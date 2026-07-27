@@ -7,7 +7,6 @@ import {
   Typography,
   Chip,
   Stack,
-  Box,
 } from "@mui/material";
 import DirectionsBoatIcon from "@mui/icons-material/DirectionsBoat";
 import GroupsIcon from "@mui/icons-material/Groups";
@@ -62,6 +61,7 @@ export const BoatCard: React.FC<BoatCardProps> = ({ boat, onSelect }) => {
           <Typography variant="body2" color="text.secondary" mb={2}>
             A partire da <strong>€{boat.costo_giornaliero}</strong> / giorno
           </Typography>
+          
 
           {/* Badge con le informazioni principali */}
           <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">

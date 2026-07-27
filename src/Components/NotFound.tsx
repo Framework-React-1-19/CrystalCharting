@@ -63,8 +63,7 @@ export function NotFound() {
                   "0%, 100%": { transform: "translateY(0px) rotate(-45deg)" },
                   "50%": { transform: "translateY(-8px) rotate(-35deg)" },
                 }
-              }}
-            />
+              }}/>
           </Box>
 
           {/* Codice Errore 404 */}

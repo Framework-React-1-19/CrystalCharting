@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from "react";
+// https://lucide.dev/guide/react/advanced/typescript
 import {
   ChevronLeft,
   ChevronRight,
