@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Box,
   Card,
   CardMedia,
   CardContent,
@@ -39,8 +40,8 @@ export const BoatCard: React.FC<BoatCardProps> = ({ boat, onSelect }) => {
           transform: "translateY(-4px)",
           boxShadow: 6,
         },
-      }}
-    >
+      }}>
+
       <CardActionArea
         onClick={() => onSelect(boat)}
         sx={{
@@ -49,8 +50,8 @@ export const BoatCard: React.FC<BoatCardProps> = ({ boat, onSelect }) => {
           flexDirection: "column",
           alignItems: "stretch",
           flex: 1,
-        }}
-      >
+        }}>
+
         <CardMedia
           component="img"
           height="180"
