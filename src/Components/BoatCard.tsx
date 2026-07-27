@@ -28,6 +28,7 @@ export const BoatCard: React.FC<BoatCardProps> = ({ boat, onSelect }) => {
     <Card
       sx={{
         height: "100%",
+        width: "100%",
         display: "flex",
         flexDirection: "column",
         transition: "transform 0.2s, box-shadow 0.2s",
@@ -35,8 +36,7 @@ export const BoatCard: React.FC<BoatCardProps> = ({ boat, onSelect }) => {
           transform: "translateY(-4px)",
           boxShadow: 6,
         },
-      }}
-    >
+      }}>
       <CardActionArea
         onClick={() => onSelect(boat)}
         sx={{
@@ -44,21 +44,18 @@ export const BoatCard: React.FC<BoatCardProps> = ({ boat, onSelect }) => {
           display: "flex",
           flexDirection: "column",
           alignItems: "stretch",
-        }}
-      >
+        }}>
         <CardMedia
           component="img"
           height="180"
           image={PLACEHOLDER_IMAGE}
-          alt={boat.nomebarca}
-        />
+          alt={boat.nomebarca}/>
         <CardContent sx={{ flexGrow: 1 }}>
           <Typography
             gutterBottom
             variant="h6"
             component="div"
-            fontWeight="bold"
-          >
+            fontWeight="bold">
             {boat.nomebarca}
           </Typography>
 
@@ -73,18 +70,18 @@ export const BoatCard: React.FC<BoatCardProps> = ({ boat, onSelect }) => {
               label={boat.tipo}
               color="primary"
               variant="outlined"
-              size="small"
-            />
+              size="small"/>
+
             <Chip
               icon={<GroupsIcon fontSize="small" />}
               label={`${boat.capienza} persone`}
-              size="small"
-            />
+              size="small"/>
+
             <Chip
               icon={<StraightenIcon fontSize="small" />}
               label={`${boat.lunghezza} m`}
-              size="small"
-            />
+              size="small" />
+
           </Stack>
         </CardContent>
       </CardActionArea>
