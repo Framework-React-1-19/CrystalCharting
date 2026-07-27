@@ -15,7 +15,6 @@ import {
   DialogContent,
   DialogActions,
   CircularProgress,
-  Divider,
   Stack,
   Tooltip
 } from "@mui/material";
@@ -42,6 +41,8 @@ import {
   startOfDay
 } from "date-fns";
 import { it } from "date-fns/locale";
+
+import { BoatDivider } from "./BoatDivider";
 
 // interfaccia per i dati del json
 export interface Prenotazione {
@@ -250,10 +251,11 @@ export function CalendarioAdmin() {
 
       {/* Finestra di Dettaglio quando clicchi un Giorno */}
       <Dialog open={Boolean(selectedDay)} onClose={() => setSelectedDay(null)} maxWidth="xs" fullWidth>
-        <DialogTitle sx={{ fontWeight: "bold", fontSize: "0.95rem", py: 1.5 }}>
+        <DialogTitle sx={{ fontWeight: "bold", fontSize: "0.95rem", py: 1.5, textAlign: "center" }}>
           {selectedDay && format(selectedDay, "EEEE d MMMM yyyy", { locale: it })}
+          <BoatDivider />
         </DialogTitle>
-        <Divider />
+        
         <DialogContent sx={{ py: 1.5 }}>
           {prenotazioniGiornoSelezionato.length === 0 ? (
             <Typography sx={{ color: "text.secondary", textAlign: "center", py: 2 }} variant="body2">
