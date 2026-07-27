@@ -35,11 +35,21 @@ export const FiltriBarche: React.FC<FiltriBarcheProps> = ({
   };
 
   return (
-    <Paper elevation={2} sx={{ p: 3, mb: 4, borderRadius: 2 }}>
-      <Typography variant="h6" mb={2} fontWeight="bold">
+    <Paper
+      elevation={2}
+      sx={{
+        p: 3,
+        mb: 4,
+        borderRadius: 2,
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+      }}
+    >
+      <Typography variant="h6" mb={2} fontWeight="bold" align="center">
         Filtra Imbarcazioni
       </Typography>
-      <Grid container spacing={2} alignItems="center">
+      <Grid container spacing={2} alignItems="center" justifyContent="center">
         {/* Filtro Tipo */}
         <Grid item xs={12} sm={6} md={3}>
           <FormControl fullWidth size="small">

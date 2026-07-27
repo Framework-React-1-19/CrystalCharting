@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useMemo } from "react";
 import {
   Container,
-  Grid,
   Typography,
   CircularProgress,
   Alert,
   Box,
+  Grid,
 } from "@mui/material";
 import { Boat, FilterState } from "../types/boat";
 import { BoatCard } from "./BoatCard";
@@ -36,9 +36,7 @@ export const Catalogo: React.FC = () => {
     const fetchBarche = async () => {
       try {
         setLoading(true);
-        const response = await fetch(
-          "/testbarca.json",
-        );
+        const response = await fetch("/testbarca.json");
 
         if (!response.ok) {
           throw new Error(`Errore HTTP: ${response.status}`);
@@ -108,7 +106,7 @@ export const Catalogo: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ py: 4}}>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
       <Typography
         variant="h3"
         component="h1"
@@ -116,7 +114,8 @@ export const Catalogo: React.FC = () => {
         sx={{
           textAlign: "center",
           fontWeight: "bold",
-        }}>
+        }}
+      >
         Catalogo Imbarcazioni
       </Typography>
 
@@ -125,7 +124,8 @@ export const Catalogo: React.FC = () => {
         filters={filters}
         onFilterChange={setFilters}
         tipiDisponibili={tipiDisponibili}
-        onReset={() => setFilters(INITIAL_FILTERS)}/>
+        onReset={() => setFilters(INITIAL_FILTERS)}
+      />
 
       {/* Indicatore di caricamento */}
       {loading && (
@@ -150,10 +150,28 @@ export const Catalogo: React.FC = () => {
 
       {/* Griglia delle Card Barche */}
       {!loading && !error && (
-        <Grid container spacing={3} sx={{justifyContent: "center"}}>
+        <Grid
+          container
+          spacing={3}
+          sx={{
+            justifyContent: "center",
+            alignItems: "stretch",
+            maxWidth: { xs: "100%", md: "960px" },
+            mx: "auto",
+          }}
+        >
           {barcheFiltrate.map((barca) => (
-            <Grid item key={barca.idBarca} sx={{ xs: 12, sm: 6, md: 4 }}>
-              <BoatCard boat={barca} onSelect={handleOpenModal} />
+            <Grid
+              key={barca.idBarca}
+              size={{ xs: 12, sm: 6, md: 4 }}
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+              }}
+            >
+              <Box sx={{ width: "100%", maxWidth: 360 }}>
+                <BoatCard boat={barca} onSelect={handleOpenModal} />
+              </Box>
             </Grid>
           ))}
         </Grid>

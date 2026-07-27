@@ -27,61 +27,95 @@ export const BoatCard: React.FC<BoatCardProps> = ({ boat, onSelect }) => {
   return (
     <Card
       sx={{
-        height: "100%",
+        height: { xs: 430, sm: 450 },
+        minHeight: { xs: 430, sm: 450 },
         width: "100%",
         display: "flex",
         flexDirection: "column",
+        flex: 1,
         transition: "transform 0.2s, box-shadow 0.2s",
+        overflow: "hidden",
+        alignSelf: "stretch",
         "&:hover": {
           transform: "translateY(-4px)",
           boxShadow: 6,
         },
-      }}>
+      }}
+    >
       <CardActionArea
         onClick={() => onSelect(boat)}
         sx={{
-          flexGrow: 1,
+          height: "100%",
           display: "flex",
           flexDirection: "column",
           alignItems: "stretch",
-        }}>
+          flex: 1,
+        }}
+      >
         <CardMedia
           component="img"
           height="180"
           image={PLACEHOLDER_IMAGE}
-          alt={boat.nomebarca}/>
-        <CardContent sx={{ flexGrow: 1 }}>
-          <Typography
-            gutterBottom
-            variant="h6"
-            component="div"
-            fontWeight="bold">
-            {boat.nomebarca}
-          </Typography>
+          alt={boat.nomebarca}
+          sx={{ objectFit: "cover" }}
+        />
+        <CardContent
+          sx={{
+            flexGrow: 1,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            gap: 1.5,
+          }}
+        >
+          <Box>
+            <Typography
+              gutterBottom
+              variant="h6"
+              component="div"
+              sx={{
+                fontWeight: "bold",
+                minHeight: 56,
+                display: "-webkit-box",
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: "vertical",
+                overflow: "hidden",
+              }}
+            >
+              {boat.nomebarca}
+            </Typography>
 
-          <Typography variant="body2" color="text.secondary" mb={2}>
-            A partire da <strong>€{boat.costo_giornaliero}</strong> / giorno
-          </Typography>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              A partire da <strong>€{boat.costo_giornaliero}</strong> / giorno
+            </Typography>
+          </Box>
 
           {/* Badge con le informazioni principali */}
-          <Stack direction="row" spacing={1} useFlexGap flexWrap="wrap">
+          <Stack
+            direction="row"
+            spacing={1}
+            useFlexGap
+            sx={{ flexWrap: "wrap" }}
+          >
             <Chip
               icon={<DirectionsBoatIcon fontSize="small" />}
               label={boat.tipo}
               color="primary"
               variant="outlined"
-              size="small"/>
+              size="small"
+            />
 
             <Chip
               icon={<GroupsIcon fontSize="small" />}
               label={`${boat.capienza} persone`}
-              size="small"/>
+              size="small"
+            />
 
             <Chip
               icon={<StraightenIcon fontSize="small" />}
               label={`${boat.lunghezza} m`}
-              size="small" />
-
+              size="small"
+            />
           </Stack>
         </CardContent>
       </CardActionArea>
