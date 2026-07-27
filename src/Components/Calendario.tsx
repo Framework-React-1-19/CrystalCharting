@@ -1,20 +1,32 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
-// https://lucide.dev/guide/react/advanced/typescript
-import {
-  Dialog, DialogContent, IconButton, Box, Paper, Typography,
-  Grid, Button, TextField, Alert, CircularProgress,
-} from "@mui/material";
-import CloseIcon from "@mui/icons-material/Close";
-import { Boat } from "../types/boat";
-
 /* Calendario di prenotazione — parte di Assane.
    Riceve la barca già caricata da Dettagli (niente fetch della lista barche),
    scarica solo le prenotazioni per sapere quali giorni sono occupati e si
    apre come Dialog collegata al bottone "Prenota". */
 
-const API = "https://crystalcharting.awardspace.net/api.php";
+import { useState, useEffect } from "react";
+import {
+  Dialog,
+  DialogContent,
+  IconButton,
+  Box,
+  Paper,
+  Typography,
+  Grid,
+  Button,
+  TextField,
+  Alert,
+  CircularProgress,
+} from "@mui/material";
+import CloseIcon from "@mui/icons-material/Close";
+import { Boat } from "../types/boat";
 
-interface Periodo { checkin: Date; checkout: Date; }
+const API_URL = "api.php";
+
+interface Periodo {
+  checkin: Date;
+  checkout: Date;
+}
+
 interface Props {
   boat: Boat;
   open: boolean;
@@ -24,10 +36,7 @@ interface Props {
 const oggi = new Date();
 oggi.setHours(0, 0, 0, 0);
 
-// Costruisce la stringa YYYY-MM-DD usando i valori LOCALI della data.
-// Prima si usava toISOString(), che converte in UTC: con fusi orari
-// positivi (es. Italia) la mezzanotte locale può "scivolare" al giorno
-// prima, mandando al server una data di check-in/check-out sbagliata.
+// Formatta la data in formato YYYY-MM-DD usando i valori locali per evitare shift di fuso orario
 const iso = (d: Date) => {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
@@ -35,8 +44,24 @@ const iso = (d: Date) => {
   return `${y}-${m}-${g}`;
 };
 
+// Parser flessibile per date YYYY-MM-DD o DD/MM/YYYY
+const parseData = (str: string): Date => {
+  if (!str) return new Date();
+  
+  if (str.includes("-")) {
+    const [y, m, d] = str.split("-").map(Number);
+    return new Date(y, m - 1, d);
+  }
+  
+  if (str.includes("/")) {
+    const [d, m, y] = str.split("/").map(Number);
+    return new Date(y, m - 1, d);
+  }
+  
+  return new Date(str);
+};
+
 const giorniTra = (a: Date, b: Date) => Math.round((b.getTime() - a.getTime()) / 86400000);
-const dataIt = (s: string) => { const [g, m, a] = s.split("/").map(Number); return new Date(a, m - 1, g); };
 
 export default function Calendario({ boat, open, onClose }: Props) {
   const [prenotazioni, setPrenotazioni] = useState<Periodo[]>([]);
@@ -48,38 +73,50 @@ export default function Calendario({ boat, open, onClose }: Props) {
   const [email, setEmail] = useState("");
   const [confermata, setConfermata] = useState(false);
   const [errore, setErrore] = useState("");
-  const [invio, setInvio] = useState(false); // true mentre la richiesta di prenotazione è in corso
+  const [invio, setInvio] = useState(false);
 
-  // Ogni volta che la modale si apre, ricarica le prenotazioni e azzera la selezione precedente.
   useEffect(() => {
-    if (!open) return;
+    if (!open || !boat) return;
+    
     setCaricamento(true);
     setConfermata(false);
     setCheckin(null);
     setCheckout(null);
     setErrore("");
-    fetch(`${API}?action=get_prenotazioni`)
-      .then((r) => r.json())
+
+    fetch(`${API_URL}?action=get_prenotazioni`)
+      .then((r) => {
+        if (!r.ok) throw new Error(`Errore HTTP ${r.status}`);
+        return r.json();
+      })
       .then((pren) => {
-        setPrenotazioni(
-          pren
-            .filter((p: any) => p.idBarca === boat.idBarca)
-            .map((p: any) => ({ checkin: dataIt(p.data_checkin), checkout: dataIt(p.data_checkout) }))
-        );
+        if (Array.isArray(pren)) {
+          const prenotazioniBarca = pren
+            .filter((p: any) => Number(p.idBarca) === Number(boat.idBarca))
+            .map((p: any) => ({
+              checkin: parseData(p.data_checkin || p.checkin),
+              checkout: parseData(p.data_checkout || p.checkout),
+            }));
+          setPrenotazioni(prenotazioniBarca);
+        }
       })
       .catch((e) => {
-        console.error("Errore nel caricamento delle prenotazioni", e);
-        setErrore("Impossibile caricare le prenotazioni esistenti");
+        console.error("Errore nel caricamento delle prenotazioni:", e);
+        setErrore("Impossibile caricare le prenotazioni esistenti.");
       })
       .finally(() => setCaricamento(false));
-  }, [open, boat.idBarca]);
+  }, [open, boat]);
 
   const occupato = (d: Date) => prenotazioni.some((p) => d >= p.checkin && d < p.checkout);
 
   function clicGiorno(d: Date) {
     if (d < oggi || occupato(d)) return;
-    if (!checkin || checkout || d <= checkin) { setCheckin(d); setCheckout(null); }
-    else setCheckout(d);
+    if (!checkin || checkout || d <= checkin) {
+      setCheckin(d);
+      setCheckout(null);
+    } else {
+      setCheckout(d);
+    }
   }
 
   const notti = checkin && checkout ? giorniTra(checkin, checkout) : 0;
@@ -87,51 +124,36 @@ export default function Calendario({ boat, open, onClose }: Props) {
 
   async function prenota() {
     if (!checkin || !checkout || !nome || !email) {
-      setErrore("Compila i campi e seleziona le date");
+      setErrore("Compila tutti i campi e seleziona le date di check-in e check-out.");
       return;
     }
 
     setErrore("");
     setInvio(true);
+
     try {
-      const r = await fetch(`${API}?action=add_prenotazione`, {
+      const r = await fetch(`${API_URL}?action=add_prenotazione`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           idBarca: boat.idBarca,
           data_checkin: iso(checkin),
           data_checkout: iso(checkout),
-          email,
+          email: email,
           nome_prenotazione: nome,
         }),
       });
 
-      // Leggiamo prima come testo: se il PHP restituisce un warning/notice
-      // prima del JSON (frequente su hosting condivisi), r.json() esploderebbe
-      // e prima veniva inghiottito silenziosamente da .catch(() => ({})).
-      const testo = await r.text();
-      let res: any = {};
-      try { res = testo ? JSON.parse(testo) : {}; } catch {
-        console.error("Risposta del server non è JSON valido:", testo);
-      }
+      const risposta = await r.text();
 
-      if (!r.ok) {
-        console.error("add_prenotazione: errore HTTP", r.status, testo);
-        setErrore(`Errore dal server (${r.status}). Riprova più tardi.`);
-        return;
-      }
-
-      if (res?.success) {
+      if (r.ok && risposta.trim() === "OK") {
         setConfermata(true);
       } else {
-        console.error("add_prenotazione: risposta inattesa", res);
-        setErrore("Il server ha rifiutato la prenotazione");
+        console.error("Risposta errore dal server:", risposta);
+        setErrore(`Errore dal server: ${risposta || "Impossibile completare la prenotazione"}`);
       }
     } catch (e) {
-      // Qui finiscono errori di rete/CORS: prima non erano intercettati,
-      // quindi la promise falliva in silenzio e sembrava che il click
-      // non facesse nulla.
-      console.error("Errore di rete durante la prenotazione", e);
+      console.error("Errore di rete durante la prenotazione:", e);
       setErrore("Impossibile contattare il server. Controlla la connessione e riprova.");
     } finally {
       setInvio(false);
@@ -153,16 +175,20 @@ export default function Calendario({ boat, open, onClose }: Props) {
             <CircularProgress />
           </Box>
         ) : confermata ? (
-          <Alert severity="success">
-            Prenotazione confermata per {boat.nomebarca} — Totale €{totale}
+          <Alert severity="success" sx={{ my: 2 }}>
+            Prenotazione confermata per <strong>{boat.nomebarca}</strong> — Totale: <strong>€{totale}</strong>
           </Alert>
         ) : (
           <Box>
-            <Typography variant="h5">{boat.nomebarca} — €{boat.costo_giornaliero}/giorno</Typography>
+            <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+              {boat.nomebarca} — €{boat.costo_giornaliero}/giorno
+            </Typography>
 
             <Box display="flex" justifyContent="space-between" alignItems="center" mt={2}>
               <Button onClick={() => setMese(new Date(mese.getFullYear(), mese.getMonth() - 1, 1))}>◀</Button>
-              <Typography>{mese.toLocaleDateString("it-IT", { month: "long", year: "numeric" })}</Typography>
+              <Typography sx={{ textTransform: "capitalize", fontWeight: "bold" }}>
+                {mese.toLocaleDateString("it-IT", { month: "long", year: "numeric" })}
+              </Typography>
               <Button onClick={() => setMese(new Date(mese.getFullYear(), mese.getMonth() + 1, 1))}>▶</Button>
             </Box>
 
@@ -182,18 +208,48 @@ export default function Calendario({ boat, open, onClose }: Props) {
               ))}
             </Grid>
 
-            <Paper sx={{ p: 2, mt: 2 }}>
-              <Typography>Check-in: {checkin ? checkin.toLocaleDateString("it-IT") : "—"}</Typography>
-              <Typography>Check-out: {checkout ? checkout.toLocaleDateString("it-IT") : "—"}</Typography>
-              <Typography fontWeight="bold">Totale: €{totale}</Typography>
+            <Paper sx={{ p: 2, mt: 2, backgroundColor: "#f8fafc" }} variant="outlined">
+              <Typography variant="body2">
+                Check-in: <strong>{checkin ? checkin.toLocaleDateString("it-IT") : "—"}</strong>
+              </Typography>
+              <Typography variant="body2">
+                Check-out: <strong>{checkout ? checkout.toLocaleDateString("it-IT") : "—"}</strong>
+              </Typography>
+              <Typography variant="subtitle1" fontWeight="bold" sx={{ mt: 1, color: "primary.main" }}>
+                Totale: €{totale}
+              </Typography>
             </Paper>
 
-            <TextField label="Nome e cognome" fullWidth margin="normal" value={nome} onChange={(e) => setNome(e.target.value)} />
-            <TextField label="Email" fullWidth margin="normal" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <TextField
+              label="Nome e cognome"
+              fullWidth
+              margin="normal"
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+            />
+            <TextField
+              label="Email"
+              type="email"
+              fullWidth
+              margin="normal"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
 
-            {errore && <Alert severity="error" sx={{ mt: 1 }}>{errore}</Alert>}
+            {errore && (
+              <Alert severity="error" sx={{ mt: 2 }}>
+                {errore}
+              </Alert>
+            )}
 
-            <Button variant="contained" fullWidth sx={{ mt: 2 }} onClick={prenota} disabled={invio}>
+            <Button
+              variant="contained"
+              fullWidth
+              size="large"
+              sx={{ mt: 2, py: 1.2, fontWeight: "bold" }}
+              onClick={prenota}
+              disabled={invio}
+            >
               {invio ? "Invio in corso…" : "Conferma prenotazione"}
             </Button>
           </Box>
