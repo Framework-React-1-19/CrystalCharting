@@ -6,7 +6,7 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import { Boat } from "../types/boat";
 
-/* Calendario di prenotazione — parte di Assan.
+/* Calendario di prenotazione — parte di Assane.
    Riceve la barca già caricata da Dettagli (niente fetch della lista barche),
    scarica solo le prenotazioni per sapere quali giorni sono occupati e si
    apre come Dialog collegata al bottone "Prenota". */
@@ -23,7 +23,17 @@ interface Props {
 const oggi = new Date();
 oggi.setHours(0, 0, 0, 0);
 
-const iso = (d: Date) => d.toISOString().slice(0, 10);
+// Costruisce la stringa YYYY-MM-DD usando i valori LOCALI della data.
+// Prima si usava toISOString(), che converte in UTC: con fusi orari
+// positivi (es. Italia) la mezzanotte locale può "scivolare" al giorno
+// prima, mandando al server una data di check-in/check-out sbagliata.
+const iso = (d: Date) => {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const g = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${g}`;
+};
+
 const giorniTra = (a: Date, b: Date) => Math.round((b.getTime() - a.getTime()) / 86400000);
 const dataIt = (s: string) => { const [g, m, a] = s.split("/").map(Number); return new Date(a, m - 1, g); };
 
@@ -37,6 +47,7 @@ export default function Calendario({ boat, open, onClose }: Props) {
   const [email, setEmail] = useState("");
   const [confermata, setConfermata] = useState(false);
   const [errore, setErrore] = useState("");
+  const [invio, setInvio] = useState(false); // true mentre la richiesta di prenotazione è in corso
 
   // Ogni volta che la modale si apre, ricarica le prenotazioni e azzera la selezione precedente.
   useEffect(() => {
@@ -55,6 +66,10 @@ export default function Calendario({ boat, open, onClose }: Props) {
             .map((p: any) => ({ checkin: dataIt(p.data_checkin), checkout: dataIt(p.data_checkout) }))
         );
       })
+      .catch((e) => {
+        console.error("Errore nel caricamento delle prenotazioni", e);
+        setErrore("Impossibile caricare le prenotazioni esistenti");
+      })
       .finally(() => setCaricamento(false));
   }, [open, boat.idBarca]);
 
@@ -70,21 +85,56 @@ export default function Calendario({ boat, open, onClose }: Props) {
   const totale = notti * boat.costo_giornaliero;
 
   async function prenota() {
-    if (!checkin || !checkout || !nome || !email) { setErrore("Compila i campi e seleziona le date"); return; }
-    const r = await fetch(`${API}?action=add_prenotazione`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        idBarca: boat.idBarca,
-        data_checkin: iso(checkin),
-        data_checkout: iso(checkout),
-        email,
-        nome_prenotazione: nome,
-      }),
-    });
-    const res = await r.json().catch(() => ({}));
-    if (res?.success) setConfermata(true);
-    else setErrore("Il server ha rifiutato la prenotazione");
+    if (!checkin || !checkout || !nome || !email) {
+      setErrore("Compila i campi e seleziona le date");
+      return;
+    }
+
+    setErrore("");
+    setInvio(true);
+    try {
+      const r = await fetch(`${API}?action=add_prenotazione`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          idBarca: boat.idBarca,
+          data_checkin: iso(checkin),
+          data_checkout: iso(checkout),
+          email,
+          nome_prenotazione: nome,
+        }),
+      });
+
+      // Leggiamo prima come testo: se il PHP restituisce un warning/notice
+      // prima del JSON (frequente su hosting condivisi), r.json() esploderebbe
+      // e prima veniva inghiottito silenziosamente da .catch(() => ({})).
+      const testo = await r.text();
+      let res: any = {};
+      try { res = testo ? JSON.parse(testo) : {}; } catch {
+        console.error("Risposta del server non è JSON valido:", testo);
+      }
+
+      if (!r.ok) {
+        console.error("add_prenotazione: errore HTTP", r.status, testo);
+        setErrore(`Errore dal server (${r.status}). Riprova più tardi.`);
+        return;
+      }
+
+      if (res?.success) {
+        setConfermata(true);
+      } else {
+        console.error("add_prenotazione: risposta inattesa", res);
+        setErrore("Il server ha rifiutato la prenotazione");
+      }
+    } catch (e) {
+      // Qui finiscono errori di rete/CORS: prima non erano intercettati,
+      // quindi la promise falliva in silenzio e sembrava che il click
+      // non facesse nulla.
+      console.error("Errore di rete durante la prenotazione", e);
+      setErrore("Impossibile contattare il server. Controlla la connessione e riprova.");
+    } finally {
+      setInvio(false);
+    }
   }
 
   const numGiorni = new Date(mese.getFullYear(), mese.getMonth() + 1, 0).getDate();
@@ -142,8 +192,8 @@ export default function Calendario({ boat, open, onClose }: Props) {
 
             {errore && <Alert severity="error" sx={{ mt: 1 }}>{errore}</Alert>}
 
-            <Button variant="contained" fullWidth sx={{ mt: 2 }} onClick={prenota}>
-              Conferma prenotazione
+            <Button variant="contained" fullWidth sx={{ mt: 2 }} onClick={prenota} disabled={invio}>
+              {invio ? "Invio in corso…" : "Conferma prenotazione"}
             </Button>
           </Box>
         )}
