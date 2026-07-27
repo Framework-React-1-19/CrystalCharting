@@ -12,6 +12,8 @@ import { BoatCard } from "./BoatCard";
 import { Dettagli } from "./Dettagli";
 import { FiltriBarche } from "./FiltriBarche";
 
+const API_URL = "api.php?action=get_barche";
+
 const INITIAL_FILTERS: FilterState = {
   tipo: "",
   capienzaMin: "",
@@ -24,29 +26,35 @@ export const Catalogo: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Stato per la modale e la barca selezionata
   const [selectedBoat, setSelectedBoat] = useState<Boat | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-
-  // Stato per i filtri attivi
   const [filters, setFilters] = useState<FilterState>(INITIAL_FILTERS);
 
-  // Fetch dei dati dall'API
   useEffect(() => {
     const fetchBarche = async () => {
       try {
         setLoading(true);
-        const response = await fetch("/testbarca.json");
+        const response = await fetch(API_URL);
 
         if (!response.ok) {
           throw new Error(`Errore HTTP: ${response.status}`);
         }
 
         const data: Boat[] = await response.json();
-        setBarche(data);
+        
+        const normalizedData = data.map((b) => ({
+          ...b,
+          idBarca: Number(b.idBarca),
+          capienza: Number(b.capienza),
+          potenza: Number(b.potenza),
+          lunghezza: Number(b.lunghezza),
+          costo_giornaliero: Number(b.costo_giornaliero),
+        }));
+
+        setBarche(normalizedData);
         setError(null);
-      } catch (err) {
-        console.error("Errore durante il recupero dei dati:", err);
+      } catch (err: any) {
+        console.error("Errore recupero dati:", err);
         setError("Impossibile caricare il catalogo barche. Riprova più tardi.");
       } finally {
         setLoading(false);
@@ -56,45 +64,21 @@ export const Catalogo: React.FC = () => {
     fetchBarche();
   }, []);
 
-  // Ricava la lista dei tipi di barca univoci presenti per il menu a tendina
   const tipiDisponibili = useMemo(() => {
     const tipiSet = new Set(barche.map((b) => b.tipo).filter(Boolean));
     return Array.from(tipiSet);
   }, [barche]);
 
-  // Logica di filtraggio dei dati
   const barcheFiltrate = useMemo(() => {
     return barche.filter((barca) => {
-      // Filtro per tipo
-      if (filters.tipo && barca.tipo !== filters.tipo) {
-        return false;
-      }
-      // Filtro per capienza minima
-      if (
-        filters.capienzaMin !== "" &&
-        barca.capienza < Number(filters.capienzaMin)
-      ) {
-        return false;
-      }
-      // Filtro per lunghezza minima
-      if (
-        filters.lunghezzaMin !== "" &&
-        barca.lunghezza < Number(filters.lunghezzaMin)
-      ) {
-        return false;
-      }
-      // Filtro per lunghezza massima
-      if (
-        filters.lunghezzaMax !== "" &&
-        barca.lunghezza > Number(filters.lunghezzaMax)
-      ) {
-        return false;
-      }
+      if (filters.tipo && barca.tipo !== filters.tipo) return false;
+      if (filters.capienzaMin !== "" && barca.capienza < Number(filters.capienzaMin)) return false;
+      if (filters.lunghezzaMin !== "" && barca.lunghezza < Number(filters.lunghezzaMin)) return false;
+      if (filters.lunghezzaMax !== "" && barca.lunghezza > Number(filters.lunghezzaMax)) return false;
       return true;
     });
   }, [barche, filters]);
 
-  // Gestione apertura/chiusura modale
   const handleOpenModal = (boat: Boat) => {
     setSelectedBoat(boat);
     setIsModalOpen(true);
@@ -107,19 +91,10 @@ export const Catalogo: React.FC = () => {
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>
-      <Typography
-        variant="h3"
-        component="h1"
-        gutterBottom
-        sx={{
-          textAlign: "center",
-          fontWeight: "bold",
-        }}
-      >
+      <Typography variant="h3" component="h1" gutterBottom sx={{ textAlign: "center", fontWeight: "bold" }}>
         Catalogo Imbarcazioni
       </Typography>
 
-      {/* Componente Filtri */}
       <FiltriBarche
         filters={filters}
         onFilterChange={setFilters}
@@ -127,48 +102,28 @@ export const Catalogo: React.FC = () => {
         onReset={() => setFilters(INITIAL_FILTERS)}
       />
 
-      {/* Indicatore di caricamento */}
       {loading && (
         <Box sx={{ display: "flex", justifyContent: "center", my: 5 }}>
           <CircularProgress />
         </Box>
       )}
 
-      {/* Gestione Errori */}
       {error && (
         <Alert severity="error" sx={{ my: 2 }}>
           {error}
         </Alert>
       )}
 
-      {/* Nessun risultato trovato */}
       {!loading && !error && barcheFiltrate.length === 0 && (
         <Alert severity="info" sx={{ my: 2 }}>
           Nessuna imbarcazione risponde ai criteri di ricerca selezionati.
         </Alert>
       )}
 
-      {/* Griglia delle Card Barche */}
       {!loading && !error && (
-        <Grid
-          container
-          spacing={3}
-          sx={{
-            justifyContent: "center",
-            alignItems: "stretch",
-            maxWidth: { xs: "100%", md: "960px" },
-            mx: "auto",
-          }}
-        >
+        <Grid container spacing={3} sx={{ justifyContent: "center", alignItems: "stretch", maxWidth: { xs: "100%", md: "960px" }, mx: "auto" }}>
           {barcheFiltrate.map((barca) => (
-            <Grid
-              key={barca.idBarca}
-              size={{ xs: 12, sm: 6, md: 4 }}
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-              }}
-            >
+            <Grid key={barca.idBarca} item xs={12} sm={6} md={4} sx={{ display: "flex", justifyContent: "center" }}>
               <Box sx={{ width: "100%", maxWidth: 360 }}>
                 <BoatCard boat={barca} onSelect={handleOpenModal} />
               </Box>
@@ -177,12 +132,7 @@ export const Catalogo: React.FC = () => {
         </Grid>
       )}
 
-      {/* Modale Dettagli */}
-      <Dettagli
-        boat={selectedBoat}
-        open={isModalOpen}
-        onClose={handleCloseModal}
-      />
+      <Dettagli boat={selectedBoat} open={isModalOpen} onClose={handleCloseModal} />
     </Container>
   );
 };

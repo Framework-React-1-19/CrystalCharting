@@ -7,13 +7,13 @@ import {
   Button,
   Typography,
   Grid,
+  Divider,
   Box,
   Chip,
   Stack,
 } from "@mui/material";
 import { Boat } from "../types/boat";
 import Calendario from "./Calendario";
-import { BoatDivider } from "./BoatDivider";
 
 interface DettagliProps {
   boat: Boat | null;
@@ -51,7 +51,7 @@ export const Dettagli: React.FC<DettagliProps> = ({ boat, open, onClose }) => {
             </Typography>
           </Box>
 
-          <BoatDivider />
+          <Divider sx={{ my: 2 }} />
 
           {/* Griglia dettagli tecnici */}
           <Grid container spacing={2}>
@@ -110,37 +110,24 @@ export const Dettagli: React.FC<DettagliProps> = ({ boat, open, onClose }) => {
             </Grid>
           </Grid>
 
-          <BoatDivider />
+          <Divider sx={{ my: 2 }} />
 
-          <Box 
-            display="flex" 
-            flexDirection={{ xs: "column", sm: "row" }}
-            justifyContent="space-between" 
-            alignItems={{ xs: "flex-start", sm: "center" }}
-            gap={{ xs: 1.5, sm: 0 }}
-            sx={{ width: "100%", flexGrow: 1, py: 1 }}>
-
-            <Typography variant="h6" color="text.secondary">
-              Costo Giornaliero:
-            </Typography>
-
-            <Stack 
-              direction="row" 
-              alignItems="center" 
-              justifyContent={{ xs: "space-between", sm: "flex-end" }}
-              spacing={{ xs: 2, sm: 3 }}
-              sx={{ width: { xs: "100%", sm: "auto" }, marginLeft: "auto" }}>
-
+          <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Typography variant="h6">Costo Giornaliero:</Typography>
+            
+            {/* Raggruppiamo Chip e Pulsante per tenerli vicini a destra */}
+            <Stack direction="row" spacing={2} alignItems="center">
               <Chip
                 label={`€ ${boat.costo_giornaliero} / gg`}
                 color="success"
-                sx={{ fontWeight: "bold", height: "auto", py: 1, px: 1.5 }}/>
+                sx={{ fontSize: "1.1rem", py: 2, px: 1, fontWeight: "bold" }}
+              />
 
               <Button
                 variant="contained"
                 color="primary"
                 onClick={handleOpenModal}
-                sx={{ fontWeight: "bold", px: 3 }}>
+                sx={{ fontWeight: "bold" }}>
                 Prenota
               </Button>
             </Stack>
